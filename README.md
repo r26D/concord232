@@ -37,18 +37,21 @@ Once that is running, you should be able to do something like this::
 ## Basic arming and disarming
 
 Arm to stay (level 2)
+
 ```
-$ concord232_client arm-stay
+concord232_client arm-stay
 ```
 
 Arm to away (level 3)
+
 ```
-$ concord232_client arm-away
+concord232_client arm-away
 ```
 
 Disarm
+
 ```
-$ concord232_client disarm --master 1234
+concord232_client disarm --master 1234
 ```
 
 ## Arming with options
@@ -62,15 +65,58 @@ outside.
 Examples:
 
 Arm to stay with no delay
+
 ```
-$ concord232_client arm-stay-instant
+concord232_client arm-stay-instant
 ```
 
 Arm to away without beeps
+
 ```
-$ concord232_client arm-away-silent
+concord232_client arm-away-silent
 ```
 
 ## Home Assistant
+
 Home Assistant will automatically download and install the pip3 library, but it only utilizes the Client to connect to the server.  I used the instructions [found here](http://www.raspberrypi-spy.co.uk/2015/10/how-to-autorun-a-python-script-on-boot-using-systemd/) for setting up the server to run automatically at boot time.
 
+## HTTP API
+
+The concord232 server also exposes a simple HTTP API for interacting with your panel.  
+Below are the available endpoints and their usage:
+
+| Endpoint         | Method | Description/Commands                                                                                 |
+|------------------|--------|------------------------------------------------------------------------------------------------------|
+| `/panel`         | GET    | Get panel state                                                                                      |
+| `/zones`         | GET    | Get all zones                                                                                        |
+| `/partitions`    | GET    | Get all partitions                                                                                   |
+| `/command`       | GET    | `cmd=arm`, `cmd=disarm`, `cmd=keys` (see below for parameters)                                      |
+| `/version`       | GET    | Get API version                                                                                      |
+| `/equipment`     | GET    | Request all equipment data                                                                           |
+| `/all_data`      | GET    | Request dynamic data refresh                                                                         |
+
+### `/command` endpoint
+
+- **Arm the system:**
+  - `/command?cmd=arm&level=stay&option=<option>`
+  - `/command?cmd=arm&level=away&option=<option>`
+
+- **Disarm the system:**
+  - `/command?cmd=disarm&master_pin=<PIN>`
+
+- **Send keys (e.g., *, #, digits):**
+  - `/command?cmd=keys&keys=<keys>&group=<group>`
+  - Example: To send a `*` key to partition 3:  
+    `/command?cmd=keys&keys=*&group=3`
+
+### Example usage
+
+To send a * key to partition 3 using curl:
+
+```sh
+curl "http://<your_server_address>:<port>/command?cmd=keys&keys=*&group=3"
+```
+
+Replace `<your_server_address>` and `<port>` with your server's address and port.
+
+---
