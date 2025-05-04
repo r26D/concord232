@@ -14,6 +14,38 @@ To install::
 sudo pip3 install concord232
 ```
 
+## Installing Your Local Version
+
+If you want to use your own improved version of this package (instead of the version from PyPI), you can install it directly from your local source.
+
+**1. Uninstall the PyPI version (optional, but recommended):**
+
+```sh
+pip uninstall concord232
+```
+
+**2. Install your local version in "editable" mode (recommended for development):**
+
+```sh
+pip install -e .
+```
+
+This allows you to make changes to the code and have them reflected immediately.
+
+**3. Or, install your local version as a regular package:**
+
+```sh
+pip install .
+```
+
+**4. Verify your installation:**
+
+```sh
+pip show concord232
+```
+
+Check that the `Location:` field points to your local directory.
+
 The server must be run on a machine with connectivity to the panel, to get started, you must only supply the serial port.  In this case I use a USB to Serial adapter
 
 ```
