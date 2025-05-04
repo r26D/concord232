@@ -38,12 +38,13 @@ class Client(object):
                     'master_pin': master_pin})
         return r.status_code == 200
 
-    def send_keys(self, keys, group=False):
+    def send_keys(self, keys, group=False, partition=1):
         r = self._session.get(
             self._url + '/command',
             params={'cmd': 'keys',
                     'keys': keys,
-                    'group': group})
+                    'group': group,
+                    'partition': partition})
         return r.status_code == 200
 
     def get_version(self):

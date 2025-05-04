@@ -95,7 +95,8 @@ def command():
     elif args.get('cmd') == 'disarm':
         CONTROLLER.disarm(args.get('master_pin'))
     elif args.get('cmd') == 'keys':
-        CONTROLLER.send_keys(args.get('keys'),args.get('group'))
+        partition = int(args.get('partition', 1))
+        CONTROLLER.send_keys(args.get('keys'), args.get('group'), partition=partition)
     return flask.Response()
 
 @app.route('/version')

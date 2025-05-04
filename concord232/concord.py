@@ -591,7 +591,7 @@ class AlarmPanelInterface(object):
         elif option == 'instant':
             self.send_keypress([0x03, 0x04])
 
-    def send_keys(self, keys, group):
+    def send_keys(self, keys, group, partition=1):
         msg = []
         for k in keys:
             a = list(KEYPRESS_CODES.keys())[list(KEYPRESS_CODES.values()).index(str(k))]
@@ -599,11 +599,11 @@ class AlarmPanelInterface(object):
                 msg.append(a)
             else:
                 self.logger.info("Sending key: %r" % msg)
-                self.send_keypress([a])        
+                self.send_keypress([a], partition=partition)        
 
         if group:
             self.logger.info("Sending group of keys: %r" % msg)
-            self.send_keypress(msg)    
+            self.send_keypress(msg, partition=partition)    
        
 
     def disarm(self,master_pin):
