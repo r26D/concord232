@@ -235,8 +235,8 @@ def decode_message_from_ascii(ascii_msg):
     n = len(ascii_msg)
     if n % 2 != 0:
         raise BadEncoding("ASCII message has uneven number of characters.")
-    b = [ 0 ] * (n/2)
-    for i in range(n/2):
+    b = [ 0 ] * (n//2)
+    for i in range(n//2):
         b[i] = ascii_hex_to_byte(ascii_msg[2*i:2*i+2])
     return b
 

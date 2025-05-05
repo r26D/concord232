@@ -11,6 +11,9 @@ setup(
     long_description_content_type='text/markdown',
     packages=['concord232'],
     install_requires=['requests', 'stevedore', 'prettytable', 'pyserial', 'flask'],
+    extras_require={
+        'dev': ['pytest'],
+    },
     scripts=['concord232_server', 'concord232_client'],
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
@@ -19,5 +22,5 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
-    ]
+    ],
 )
