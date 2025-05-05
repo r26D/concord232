@@ -1,5 +1,7 @@
-import pytest
 import datetime
+
+import pytest
+
 from concord232 import concord_helpers
 
 

@@ -1,30 +1,39 @@
 #!/usr/bin/env python
 
 import argparse
-import pprint
-import prettytable
 import os
+import pprint
+
+import prettytable
 
 from concord232.client import client
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('command')
-    parser.add_argument('--zone', default=None, type=int,
-                        help='Zone number for zone-related commands')
-    parser.add_argument('--partition', default=None, type=int,
-                        help='Partition number for partition-related commands')
-    parser.add_argument('--user', default=None, type=int,
-                        help='User number for user-related commands')
-    parser.add_argument('--master', default=None,
-                        help='Master PIN for commands that require it')
-    parser.add_argument('--host', default='localhost:5007',
-                        help='Host and port (localhost:5007)')
-    parser.add_argument('--keys', default='',
-                        help='Key Presses to Send')    
-    parser.add_argument('--group', default='False',
-                        help='Group the Key Input as One Command ')    
+    parser.add_argument("command")
+    parser.add_argument(
+        "--zone", default=None, type=int, help="Zone number for zone-related commands"
+    )
+    parser.add_argument(
+        "--partition",
+        default=None,
+        type=int,
+        help="Partition number for partition-related commands",
+    )
+    parser.add_argument(
+        "--user", default=None, type=int, help="User number for user-related commands"
+    )
+    parser.add_argument(
+        "--master", default=None, help="Master PIN for commands that require it"
+    )
+    parser.add_argument(
+        "--host", default="localhost:5007", help="Host and port (localhost:5007)"
+    )
+    parser.add_argument("--keys", default="", help="Key Presses to Send")
+    parser.add_argument(
+        "--group", default="False", help="Group the Key Input as One Command "
+    )
 
     args = parser.parse_args()
     return args
@@ -42,34 +51,34 @@ def do_list_partitions(clnt, args):
 
 def do_arm(clnt, args):
     partition = args.partition if args.partition is not None else 1
-    if args.command.count('-') == 2:
-        _, level, option = args.command.split('-')
+    if args.command.count("-") == 2:
+        _, level, option = args.command.split("-")
         # Use send_keys to arm a specific partition
-        if level == 'stay':
-            if option == 'silent':
-                clnt.send_keys('\x05\x02', group=True, partition=partition)
-            elif option == 'instant':
-                clnt.send_keys('\x02\x04', group=True, partition=partition)
+        if level == "stay":
+            if option == "silent":
+                clnt.send_keys("\x05\x02", group=True, partition=partition)
+            elif option == "instant":
+                clnt.send_keys("\x02\x04", group=True, partition=partition)
             else:
-                clnt.send_keys('\x02', group=True, partition=partition)
-        elif level == 'away':
-            if option == 'silent':
-                clnt.send_keys('\x05\x03', group=True, partition=partition)
-            elif option == 'instant':
-                clnt.send_keys('\x03\x04', group=True, partition=partition)
+                clnt.send_keys("\x02", group=True, partition=partition)
+        elif level == "away":
+            if option == "silent":
+                clnt.send_keys("\x05\x03", group=True, partition=partition)
+            elif option == "instant":
+                clnt.send_keys("\x03\x04", group=True, partition=partition)
             else:
-                clnt.send_keys('\x03', group=True, partition=partition)
+                clnt.send_keys("\x03", group=True, partition=partition)
     else:
-        _, level = args.command.split('-')
-        if level == 'stay':
-            clnt.send_keys('\x02', group=True, partition=partition)
-        elif level == 'away':
-            clnt.send_keys('\x03', group=True, partition=partition)
+        _, level = args.command.split("-")
+        if level == "stay":
+            clnt.send_keys("\x02", group=True, partition=partition)
+        elif level == "away":
+            clnt.send_keys("\x03", group=True, partition=partition)
 
 
 def do_disarm(clnt, args):
     if not args.master:
-        print('Master pin required')
+        print("Master pin required")
         return
     partition = args.partition if args.partition is not None else 1
     # Disarm by sending the master pin as keys to the specified partition
@@ -77,47 +86,58 @@ def do_disarm(clnt, args):
 
 
 def do_keys(clnt, args):
-    group = args.group.lower() == 'true' if isinstance(args.group, str) else bool(args.group)
+    group = (
+        args.group.lower() == "true"
+        if isinstance(args.group, str)
+        else bool(args.group)
+    )
     if not args.keys:
-        print('Keys required')
+        print("Keys required")
         return
     partition = args.partition if args.partition is not None else 1
     clnt.send_keys(args.keys, group, partition=partition)
 
 
 def do_summary(clnt, args):
-    t = prettytable.PrettyTable(['Zone', 'Name', 'Bypass', 'Status','Type'])
-    for zone in sorted(clnt.list_zones(), key=lambda k: k['number']) :
-        t.add_row(['%i' % zone['number'], zone['name'],
-                   zone['state'] ,
-                   '%s' % (zone['state'] or False),
-                   zone['type']])
+    t = prettytable.PrettyTable(["Zone", "Name", "Bypass", "Status", "Type"])
+    for zone in sorted(clnt.list_zones(), key=lambda k: k["number"]):
+        t.add_row(
+            [
+                "%i" % zone["number"],
+                zone["name"],
+                zone["state"],
+                "%s" % (zone["state"] or False),
+                zone["type"],
+            ]
+        )
     print(t)
 
-    t = prettytable.PrettyTable(['Partition', 'Zones', 'Status','Level'])
+    t = prettytable.PrettyTable(["Partition", "Zones", "Status", "Level"])
     for i, part in enumerate(clnt.list_partitions()):
-        if part['zones'] > 0:
-            status = "Disarmed" if part['arming_level'] == "Off" else "Armed"
-            t.add_row(['%i' % part['number'], part['zones'],status,part['arming_level']])
-        
+        if part["zones"] > 0:
+            status = "Disarmed" if part["arming_level"] == "Off" else "Armed"
+            t.add_row(
+                ["%i" % part["number"], part["zones"], status, part["arming_level"]]
+            )
+
     print(t)
 
 
 def do_show(clnt, args):
     if args.zone:
         for zone in clnt.list_zones():
-            if zone['number'] == args.zone:
+            if zone["number"] == args.zone:
                 pprint.pprint(zone)
                 return
-        print('No such zone `%s\'' % args.zone)
+        print("No such zone `%s'" % args.zone)
     elif args.partition:
         for part in clnt.list_partitions():
-            if part['number'] == args.partition:
+            if part["number"] == args.partition:
                 pprint.pprint(part)
                 return
-        print('No such partition `%s\'' % args.partition)
+        print("No such partition `%s'" % args.partition)
     else:
-        print('Zone or Partition required')
+        print("Zone or Partition required")
 
 
 def do_events(clnt, args):
@@ -136,48 +156,54 @@ def do_version(clnt, args):
 class MockClient:
     def list_zones(self):
         return [
-            {'number': 1, 'name': 'Front', 'state': False, 'type': 'Door'},
-            {'number': 2, 'name': 'Garage', 'state': True, 'type': 'Motion'},
+            {"number": 1, "name": "Front", "state": False, "type": "Door"},
+            {"number": 2, "name": "Garage", "state": True, "type": "Motion"},
         ]
+
     def list_partitions(self):
         return [
-            {'number': 1, 'zones': 2, 'arming_level': 'Off'},
-            {'number': 2, 'zones': 1, 'arming_level': 'Stay'},
+            {"number": 1, "zones": 2, "arming_level": "Off"},
+            {"number": 2, "zones": 1, "arming_level": "Stay"},
         ]
+
     def send_keys(self, keys, group, partition=None):
         return True
+
     def get_version(self):
-        return '1.2.3'
+        return "1.2.3"
+
     def disarm(self, pin):
         return True
+
     def arm(self, level):
         return True
 
 
 def main():
     args = parse_args()
-    url = 'http://%s:%s' % tuple(args.host.split(':', 1))
+    url = "http://%s:%s" % tuple(args.host.split(":", 1))
     # Use mock client if test mode is enabled
-    if os.environ.get('CONCORD232_TEST_MODE') == '1':
+    if os.environ.get("CONCORD232_TEST_MODE") == "1":
         clnt = MockClient()
     else:
         clnt = client.Client(url)
-    if args.command == 'list':
+    if args.command == "list":
         do_list(clnt, args)
-    elif args.command[0:3] == 'arm':
+    elif args.command[0:3] == "arm":
         do_arm(clnt, args)
-    elif args.command == 'disarm':
+    elif args.command == "disarm":
         do_disarm(clnt, args)
-    elif args.command == 'keys':
-        do_keys(clnt, args)        
-    elif args.command == 'partitions':
+    elif args.command == "keys":
+        do_keys(clnt, args)
+    elif args.command == "partitions":
         do_list_partitions(clnt, args)
-    elif args.command == 'summary':
+    elif args.command == "summary":
         do_summary(clnt, args)
-    elif args.command == 'show':
+    elif args.command == "show":
         do_show(clnt, args)
-    elif args.command == 'version':
+    elif args.command == "version":
         do_version(clnt, args)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

@@ -1,6 +1,7 @@
-from concord232.concord_commands import KEYPRESS_CODES
 import pytest
+
 from concord232 import concord_commands
+from concord232.concord_commands import KEYPRESS_CODES
 from concord232.concord_helpers import BadMessageException
 
 

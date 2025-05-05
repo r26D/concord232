@@ -1,11 +1,12 @@
 import pytest
+
 from concord232.concord import (
-    compute_checksum,
-    validate_message_checksum,
-    update_message_checksum,
-    encode_message_to_ascii,
-    decode_message_from_ascii,
     BadEncoding,
+    compute_checksum,
+    decode_message_from_ascii,
+    encode_message_to_ascii,
+    update_message_checksum,
+    validate_message_checksum,
 )
 
 

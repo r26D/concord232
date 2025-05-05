@@ -2,10 +2,11 @@
 Flask API for the concord232 server. Provides endpoints for panel, zones, partitions, commands, version, equipment, and all_data.
 """
 
-import flask
 import json
 import logging
 import time
+
+import flask
 
 LOG = logging.getLogger("api")
 CONTROLLER = None

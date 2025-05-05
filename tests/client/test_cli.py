@@ -1,6 +1,7 @@
+import os
 import subprocess
 import sys
-import os
+
 import pytest
 
 CONCORD_CLIENT = os.path.abspath(

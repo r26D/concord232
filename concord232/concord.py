@@ -1,18 +1,19 @@
-from datetime import datetime
 import sys
 import time
 import traceback
+from datetime import datetime
+
 import serial
+
 from concord232.concord_commands import (
-    RX_COMMANDS,
-    build_cmd_equipment_list,
     EQPT_LIST_REQ_TYPES,
+    KEYPRESS_CODES,
+    RX_COMMANDS,
+    build_cmd_alarm_trouble,
+    build_cmd_equipment_list,
     build_dynamic_data_refresh,
     build_keypress,
-    build_cmd_alarm_trouble,
-    KEYPRESS_CODES,
 )
-
 from concord232.concord_helpers import ascii_hex_to_byte, total_secs
 
 is_py2 = sys.version[0] == "2"

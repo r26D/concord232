@@ -4,9 +4,10 @@ from the alarm panel, plus code to tect mappings.
 """
 
 import datetime
+
+from concord232.concord_alarm_codes import ALARM_CODES
 from concord232.concord_helpers import BadMessageException
 from concord232.concord_tokens import decode_text_tokens
-from concord232.concord_alarm_codes import ALARM_CODES
 
 STAR = 0xA
 HASH = 0xB

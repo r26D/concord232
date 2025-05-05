@@ -1,4 +1,5 @@
 from unittest.mock import patch
+
 from concord232.client.client import Client
 
 
