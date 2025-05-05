@@ -24,12 +24,11 @@
 - [ ] Add build, test, and coverage badges to README
 - [ ] Add or review LICENSE for appropriateness
 - [ ] Add CONTRIBUTING.md for external contributors
-- [ ] Maintain a CHANGELOG.md for tracking changes
+- [x] Maintain a CHANGELOG.md for tracking changes
 
 ## Features
 
 - [ ] Enable switching keypad to a different partition
-- [x] Add partition support to the client
 - [ ] Add support for multiple panels on the same server
 - [ ] Add support for virtual keypads
 - [ ] Add support for multiple users
