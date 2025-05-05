@@ -29,6 +29,14 @@ jobs:
           uv pip install -e .
           uv pip install pytest
 
+      - name: Install Ruff
+        run: uv pip install ruff
+
+      - name: Run Ruff linter
+        run: |
+          source .venv/bin/activate
+          ruff check .
+
       - name: Run tests
         run: |
           source .venv/bin/activate

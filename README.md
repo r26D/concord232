@@ -173,6 +173,17 @@ uv pip install --system --dev
 
 You can also run tests in CI using GitHub Actions (see `.github/workflows/ci.yml`).
 
+## Automated Linting
+
+This project uses [Ruff](https://docs.astral.sh/ruff/) for automated linting and code style enforcement. Ruff runs automatically on every push and pull request via GitHub Actions. You can also run it locally:
+
+```sh
+uv pip install ruff
+ruff check .
+```
+
+See `.github/workflows/ci.yml` for the CI configuration.
+
 ## Linting
 
 This project uses [ruff](https://docs.astral.sh/ruff/) for linting and code style enforcement.
@@ -206,8 +217,9 @@ exclude = [
 > **Note:** Linting is not currently run automatically in CI, so please run it locally before submitting changes.
 
 # Badges
+
+[![CI](https://github.com/yourusername/concord232/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/concord232/actions/workflows/ci.yml)
 <!-- Example badges, replace with actual URLs as needed -->
-[![Build Status](https://img.shields.io/github/workflow/status/yourusername/concord232/CI)](https://github.com/yourusername/concord232/actions)
 [![Coverage Status](https://img.shields.io/coveralls/github/yourusername/concord232/main.svg)](https://coveralls.io/github/yourusername/concord232?branch=main)
 
 # Features
