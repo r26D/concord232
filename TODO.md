@@ -11,7 +11,7 @@
 - [ ] Set up pre-commit hooks for linting, formatting, and tests
 - [ ] Ensure clear separation between client and server code
 - [x] Define CLI entry points in  pyproject.toml
-- [ ] Use configuration files instead of hardcoding settings
+- [x] Use configuration files instead of hardcoding settings
 - [ ] Pin dependency versions for reproducibility
 - [ ] Document virtual environment setup
 - [ ] Ensure no secrets or credentials are in the repo

@@ -1,5 +1,9 @@
 # Test Coverage Notes
 
+## Configuration for Testing
+
+The server now supports configuration via a `config.ini` file. Tests that depend on server settings (such as serial port, listen address, or port) can use a test-specific config file or override settings with command-line arguments. See the README for config file details.
+
 ## Current Coverage
 
 - `concord_helpers.py`: Fully tested

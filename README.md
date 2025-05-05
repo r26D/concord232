@@ -52,6 +52,38 @@ The server must be run on a machine with connectivity to the panel, to get start
 concord232_server --serial /dev/ttyUSB0 
 ```
 
+You can now also use a configuration file (`config.ini` by default) to specify server settings. Command-line arguments will override config file values if both are provided.
+
+### Using a config file
+
+Create a `config.ini` file in your project directory (or specify a different file with `--config myfile.ini`). Example:
+
+```
+[server]
+# Serial port to open for stream (e.g., /dev/ttyUSB0 or COM3)
+serial = /dev/ttyUSB0
+# Listen address for the API server (default: 0.0.0.0, all interfaces)
+listen = 0.0.0.0
+# Listen port for the API server (default: 5007)
+port = 5007
+# Path to log file (default: none; logs to stdout if not set)
+log = 
+```
+
+You can then start the server with just:
+
+```
+concord232_server
+```
+
+Or specify a different config file:
+
+```
+concord232_server --config mysettings.ini
+```
+
+Any command-line argument (e.g., `--serial`, `--port`) will override the value in the config file.
+
 Once that is running, you should be able to do something like this::
 
 ```
