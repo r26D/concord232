@@ -3,14 +3,14 @@
 - [x] Improve README.md with setup, usage, and contribution instructions
 - [x] Add or improve docstrings for all public modules, classes, and functions
 - [x] Generate API documentation (MkDocs)
-- [ ] Increase test coverage and use coverage tools (e.g., pytest-cov)
+- [x] Increase test coverage and use coverage tools (e.g., pytest-cov)
 - [x] Organize tests logically by feature/module
 - [ ] Ensure automated testing in CI workflows
-- [ ] Use linters and formatters (Ruff, Black, isort) for code style
+- [x] Use linters and formatters (Ruff, Black, isort) for code style
 - [ ] Add type hints and use mypy for static type checking
 - [ ] Set up pre-commit hooks for linting, formatting, and tests
 - [ ] Ensure clear separation between client and server code
-- [ ] Define CLI entry points in setup.py or pyproject.toml
+- [x] Define CLI entry points in  pyproject.toml
 - [ ] Use configuration files instead of hardcoding settings
 - [ ] Pin dependency versions for reproducibility
 - [ ] Document virtual environment setup

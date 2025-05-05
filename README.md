@@ -244,8 +244,7 @@ skip = [".venv", "concord232.egg-info", "__pycache__"]
 # Badges
 
 [![CI](https://github.com/yourusername/concord232/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/concord232/actions/workflows/ci.yml)
-<!-- Example badges, replace with actual URLs as needed -->
-[![Coverage Status](https://img.shields.io/coveralls/github/yourusername/concord232/main.svg)](https://coveralls.io/github/yourusername/concord232?branch=main)
+[![Coverage Status](https://img.shields.io/badge/coverage-27%25-yellow.svg)](coverage.xml)
 
 # Features
 

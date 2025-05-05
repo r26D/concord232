@@ -56,7 +56,7 @@ classifiers = [
 urls = { "Homepage" = "http://github.com/JasonCarter80/concord232" }
 
 [project.optional-dependencies]
-dev = ["pytest"]
+dev = ["pytest", "pytest-cov"]
 docs = [
     "mkdocs",
     "mkdocs-material",

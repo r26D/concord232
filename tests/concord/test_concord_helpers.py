@@ -1,11 +1,17 @@
-from concord232.concord_helpers import ascii_hex_to_byte, total_secs
+import pytest
+import datetime
+from concord232 import concord_helpers
 
-def test_ascii_hex_to_byte():
-    assert ascii_hex_to_byte(['3', 'A']) == 0x3A
-    assert ascii_hex_to_byte(['0', '0']) == 0x00
-    assert ascii_hex_to_byte(['F', 'F']) == 0xFF
+def test_ascii_hex_to_byte_str():
+    assert concord_helpers.ascii_hex_to_byte('1A') == 26
+
+def test_ascii_hex_to_byte_list():
+    assert concord_helpers.ascii_hex_to_byte(['1', 'A']) == 26
+
+def test_ascii_hex_to_byte_invalid():
+    with pytest.raises(ValueError):
+        concord_helpers.ascii_hex_to_byte('ZZ')
 
 def test_total_secs():
-    from datetime import timedelta
-    assert total_secs(timedelta(seconds=5)) == 5
-    assert total_secs(timedelta(minutes=2, seconds=3)) == 123 
+    td = datetime.timedelta(days=1, seconds=3661, microseconds=500000)
+    assert concord_helpers.total_secs(td) == pytest.approx(90061.5) 
