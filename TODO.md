@@ -16,7 +16,7 @@
 - [ ] Document virtual environment setup
 - [ ] Ensure no secrets or credentials are in the repo
 - [ ] Regularly update dependencies and check for vulnerabilities
-- [ ] Provide helpful CLI --help and error messages
+- [x] Provide helpful CLI --help and error messages
 - [ ] Use structured logging instead of print statements
 - [ ] Automate versioning and releases
 - [ ] Add build, test, and coverage badges to README
