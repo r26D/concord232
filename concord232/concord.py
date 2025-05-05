@@ -2,23 +2,19 @@ from datetime import datetime
 import sys
 import time
 import traceback
-
-
-is_py2 = sys.version[0] == '2'
-if is_py2:
-    import Queue as Queue
-else:
-    import queue as Queue
-
 import serial
-
-
 from concord232.concord_commands import RX_COMMANDS, \
     build_cmd_equipment_list, EQPT_LIST_REQ_TYPES, \
     build_dynamic_data_refresh, build_keypress, \
     build_cmd_alarm_trouble, KEYPRESS_CODES
 
 from concord232.concord_helpers import ascii_hex_to_byte, total_secs
+
+is_py2 = sys.version[0] == '2'
+if is_py2:
+    import Queue as Queue
+else:
+    import queue as Queue
 
 CONCORD_MAX_ZONE = 6
 
@@ -235,8 +231,8 @@ def decode_message_from_ascii(ascii_msg):
     n = len(ascii_msg)
     if n % 2 != 0:
         raise BadEncoding("ASCII message has uneven number of characters.")
-    b = [ 0 ] * (n/2)
-    for i in range(n/2):
+    b = [ 0 ] * (n//2)
+    for i in range(n//2):
         b[i] = ascii_hex_to_byte(ascii_msg[2*i:2*i+2])
     return b
 
@@ -254,7 +250,7 @@ class AlarmPanelInterface(object):
         self.users = {}
         self.master_pin = '0520'
      
-        self.display_messages = [];
+        self.display_messages = []
         # Messages on the transmit queue are in binary format with a
         # valid checksum.
         self.tx_queue = Queue.Queue()
@@ -367,11 +363,11 @@ class AlarmPanelInterface(object):
         self.logger.debug("Message Loop Starting")        
         #self.request_partitions();
         #time.sleep(1)
-        self.request_zones();        
+        self.request_zones()        
         #time.sleep(1)
         #self.request_users();
         #time.sleep(1)
-        self.request_dynamic_data_refresh();
+        self.request_dynamic_data_refresh()
         loop_start_at = datetime.now()
         loop_last_print_at = datetime.now()
 
@@ -407,7 +403,6 @@ class AlarmPanelInterface(object):
                     and self.serial_interface.wait_for_message_start() == MSG_START:
                 no_inputs = False
 
-                msg_ok = True
                 try:
                     msg = self.serial_interface.read_next_message()
                     #self.logger.debug(msg)
@@ -415,8 +410,6 @@ class AlarmPanelInterface(object):
                     self.send_nak()
                     self.logger.error(repr(ex))
                     continue
-
-                msg_time = datetime.now()
 
                 if len(msg) < 3:
                     # Message too short, need at least length byte,
@@ -576,7 +569,7 @@ class AlarmPanelInterface(object):
         self.enqueue_msg_for_tx(msg)
         
     def arm_stay(self,option):
-        if option == None:
+        if option is None:
             self.send_keypress([0x02])
         elif option == 'silent':
             self.send_keypress([0x05, 0x02])
@@ -584,14 +577,14 @@ class AlarmPanelInterface(object):
             self.send_keypress([0x02, 0x04])
 
     def arm_away(self,option):
-        if option == None:
+        if option is None:
             self.send_keypress([0x03])
         elif option == 'silent':
             self.send_keypress([0x05, 0x03])
         elif option == 'instant':
             self.send_keypress([0x03, 0x04])
 
-    def send_keys(self, keys, group):
+    def send_keys(self, keys, group, partition=1):
         msg = []
         for k in keys:
             a = list(KEYPRESS_CODES.keys())[list(KEYPRESS_CODES.values()).index(str(k))]
@@ -599,11 +592,11 @@ class AlarmPanelInterface(object):
                 msg.append(a)
             else:
                 self.logger.info("Sending key: %r" % msg)
-                self.send_keypress([a])        
+                self.send_keypress([a], partition=partition)        
 
         if group:
             self.logger.info("Sending group of keys: %r" % msg)
-            self.send_keypress(msg)    
+            self.send_keypress(msg, partition=partition)    
        
 
     def disarm(self,master_pin):

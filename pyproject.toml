@@ -1,3 +1,68 @@
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest"
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = [
+    ".venv",
+    "concord232.egg-info",
+    "__pycache__",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip = [".venv", "concord232.egg-info", "__pycache__"]
+
+[tool.mkdocs]
+# MkDocs configuration section (if not present)
+
+[project]
+name = "concord232"
+version = "0.15.1"
+description = "GE Concord 4 RS232 Serial Interface Library and Server"
+authors = [
+    { name = "Jason Carter", email = "jason@jason-carter.net" }
+]
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.6"
+dependencies = [
+    "requests",
+    "stevedore",
+    "prettytable",
+    "pyserial",
+    "flask"
+]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9"
+]
+urls = { "Homepage" = "http://github.com/JasonCarter80/concord232" }
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov"]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]"
+]
+
+[project.scripts]
+concord232_server = "concord232_server:main"
+concord232_client = "concord232_client:main"

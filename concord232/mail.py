@@ -1,3 +1,6 @@
+"""
+Email notification utilities for concord232. Handles sending system, partition, and log event emails based on configuration.
+"""
 try:
     import ConfigParser as configparser
 except ImportError:
@@ -10,10 +13,21 @@ import smtplib
 
 
 class MissingEmailConfig(Exception):
+    """Raised when required email configuration is missing."""
     pass
 
 
 def _send_system_email(config, subject, recips, body):
+    """
+    Send an email with the given subject and body to the specified recipients using the provided config.
+    Args:
+        config: ConfigParser object with email settings.
+        subject (str): Email subject.
+        recips (list): List of recipient email addresses.
+        body (str): Email body.
+    Raises:
+        MissingEmailConfig: If required config options are missing.
+    """
     try:
         fromaddr = config.get('email', 'fromaddr')
         smtphost = config.get('email', 'smtphost')
@@ -35,6 +49,13 @@ def _send_system_email(config, subject, recips, body):
 
 
 def send_system_email(config, deasserted, asserted):
+    """
+    Send a system alert email listing asserted and deasserted flags.
+    Args:
+        config: ConfigParser object with email settings.
+        deasserted (set): Flags that are now deasserted.
+        asserted (set): Flags that are now asserted.
+    """
     try:
         emails = config.get('email', 'system').split(',')
     except (configparser.NoOptionError,
@@ -60,6 +81,14 @@ def send_system_email(config, deasserted, asserted):
 
 
 def send_partition_email(config, partition, deasserted, asserted):
+    """
+    Send a partition alert email for a specific partition, listing asserted and deasserted flags.
+    Args:
+        config: ConfigParser object with email settings.
+        partition: Partition object with a 'number' attribute.
+        deasserted (set): Flags that are now deasserted.
+        asserted (set): Flags that are now asserted.
+    """
     try:
         emails = config.get('partition_%i' % partition.number,
                             'flags').split(',')
@@ -98,6 +127,15 @@ def send_partition_email(config, partition, deasserted, asserted):
 
 
 def send_partition_status_email(config, partition, recip_key, sub, message):
+    """
+    Send a status email for a specific partition with a custom subject and message.
+    Args:
+        config: ConfigParser object with email settings.
+        partition: Partition object with a 'number' attribute.
+        recip_key (str): Config key for recipient emails.
+        sub (str): Email subject.
+        message (str): Email body.
+    """
     try:
         emails = config.get('partition_%i' % partition.number,
                             recip_key).split(',')
@@ -119,6 +157,12 @@ def send_partition_status_email(config, partition, recip_key, sub, message):
 
 
 def send_log_event_mail(config, event):
+    """
+    Send an email for a log event if it matches configured alarm or event types.
+    Args:
+        config: ConfigParser object with email settings.
+        event: LogEvent object with 'event', 'event_string', and 'timestamp' attributes.
+    """
     try:
         alarm_emails = set(config.get('email', 'alarms').split(','))
     except (configparser.NoOptionError, configparser.NoSectionError):

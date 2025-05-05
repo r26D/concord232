@@ -1,3 +1,7 @@
+"""
+Data models for zones, partitions, system, log events, users, and extension hooks for concord232.
+"""
+
 MSG_TYPES = [
     'UNUSED',
     'Interface Configuration',
@@ -68,6 +72,9 @@ MSG_TYPES = [
 
 
 class Zone(object):
+    """
+    Represents a security system zone, including its number, name, state, and flags.
+    """
     STATUS_FLAGS = [
         'Faulted', 'Trouble', 'Bypass', 'Inhibit', 'Low battery',
         'Loss of supervision', 'Reserved',]
@@ -85,6 +92,11 @@ class Zone(object):
     ]
 
     def __init__(self, number):
+        """
+        Initialize a Zone.
+        Args:
+            number (int): Zone number.
+        """
         self.number = number
         self.name = 'Unknown'
         self.state = None
@@ -93,11 +105,17 @@ class Zone(object):
 
     @property
     def bypassed(self):
+        """
+        Returns True if the zone is bypassed or inhibited.
+        """
         return ('Inhibit' in self.condition_flags or
                 'Bypass' in self.condition_flags)
 
 
 class Partition(object):
+    """
+    Represents a security system partition, including its number and condition flags.
+    """
     CONDITION_FLAGS = [
         ['Bypass code required', 'Fire trouble', 'Fire',
          'Pulsing buzzer', 'TLM fault memory', 'reserved',
@@ -123,16 +141,27 @@ class Partition(object):
     ]
 
     def __init__(self, number):
+        """
+        Initialize a Partition.
+        Args:
+            number (int): Partition number.
+        """
         self.number = number
         self.condition_flags = []
         self.last_user = None
 
     @property
     def armed(self):
+        """
+        Returns True if the partition is armed.
+        """
         return 'Armed' in self.condition_flags
 
 
 class System(object):
+    """
+    Represents the overall system state, including panel ID and status flags.
+    """
     STATUS_FLAGS = [
         ['Line seizure', 'Off hook', 'Initial handshake received',
          'Download in progress', 'Dialer delay in progress',
@@ -170,11 +199,17 @@ class System(object):
     ]
 
     def __init__(self):
+        """
+        Initialize a System object.
+        """
         self.panel_id = 0
         self.status_flags = []
 
 
 class LogEvent(object):
+    """
+    Represents a log event from the panel, including event codes and metadata.
+    """
     ZONE_EVENT_CODES = {
         0: 'Alarm',
         1: 'Alarm restore',
@@ -250,6 +285,9 @@ class LogEvent(object):
     }
 
     def __init__(self):
+        """
+        Initialize a LogEvent object.
+        """
         self.number = 0
         self.log_size = 0
         self.event_type = 119
@@ -260,6 +298,9 @@ class LogEvent(object):
 
     @property
     def event(self):
+        """
+        Return the event string for the event type.
+        """
         for codes in (self.ZONE_EVENT_CODES, self.USER_EVENT_CODES,
                       self.DEVICE_EVENT_CODES, self.NONE_EVENT_CODES):
             if self.event_type in codes:
@@ -268,6 +309,9 @@ class LogEvent(object):
 
     @property
     def event_string(self):
+        """
+        Return a formatted string describing the event and its target.
+        """
         if self.event_type in self.ZONE_EVENT_CODES:
             return 'Zone %i %s' % (self.zone_user_device, self.event)
         if self.event_type in self.USER_EVENT_CODES:
@@ -281,6 +325,9 @@ class LogEvent(object):
 
 
 class User(object):
+    """
+    Represents a user in the system, including PIN and authority flags.
+    """
     AUTHORITY_FLAGS = (
         ['Reserved', 'Arm only', 'Arm only (during close window)',
          'Master / Program', 'Arm / Disarm', 'Bypass enable',
@@ -291,6 +338,11 @@ class User(object):
     )
 
     def __init__(self, number):
+        """
+        Initialize a User object.
+        Args:
+            number (int): User number.
+        """
         self.number = number
         self.pin = []
         self.authority_flags = []
@@ -298,20 +350,55 @@ class User(object):
 
 
 class concord232Extension(object):
+    """
+    Extension hook class for custom integrations with the controller.
+    """
     def __init__(self, controller):
+        """
+        Initialize the extension with a controller instance.
+        Args:
+            controller: The main controller object.
+        """
         self._controller = controller
 
     def zone_status(self, zone):
+        """
+        Hook for zone status updates.
+        Args:
+            zone: Zone object.
+        """
         pass
 
     def partition_status(self, partition):
+        """
+        Hook for partition status updates.
+        Args:
+            partition: Partition object.
+        """
         pass
 
     def device_command(self, house, unit, command):
+        """
+        Hook for device command events.
+        Args:
+            house: House code.
+            unit: Unit code.
+            command: Command code.
+        """
         pass
 
     def system_status(self, system):
+        """
+        Hook for system status updates.
+        Args:
+            system: System object.
+        """
         pass
 
     def log_event(self, event):
+        """
+        Hook for log event notifications.
+        Args:
+            event: LogEvent object.
+        """
         pass

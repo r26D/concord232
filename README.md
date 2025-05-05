@@ -14,11 +14,75 @@ To install::
 sudo pip3 install concord232
 ```
 
+## Installing Your Local Version
+
+If you want to use your own improved version of this package (instead of the version from PyPI), you can install it directly from your local source.
+
+**1. Uninstall the PyPI version (optional, but recommended):**
+
+```sh
+pip uninstall concord232
+```
+
+**2. Install your local version in "editable" mode (recommended for development):**
+
+```sh
+pip install -e .
+```
+
+This allows you to make changes to the code and have them reflected immediately.
+
+**3. Or, install your local version as a regular package:**
+
+```sh
+pip install .
+```
+
+**4. Verify your installation:**
+
+```sh
+pip show concord232
+```
+
+Check that the `Location:` field points to your local directory.
+
 The server must be run on a machine with connectivity to the panel, to get started, you must only supply the serial port.  In this case I use a USB to Serial adapter
 
 ```
 concord232_server --serial /dev/ttyUSB0 
 ```
+
+You can now also use a configuration file (`config.ini` by default) to specify server settings. Command-line arguments will override config file values if both are provided.
+
+### Using a config file
+
+Create a `config.ini` file in your project directory (or specify a different file with `--config myfile.ini`). Example:
+
+```
+[server]
+# Serial port to open for stream (e.g., /dev/ttyUSB0 or COM3)
+serial = /dev/ttyUSB0
+# Listen address for the API server (default: 0.0.0.0, all interfaces)
+listen = 0.0.0.0
+# Listen port for the API server (default: 5007)
+port = 5007
+# Path to log file (default: none; logs to stdout if not set)
+log = 
+```
+
+You can then start the server with just:
+
+```
+concord232_server
+```
+
+Or specify a different config file:
+
+```
+concord232_server --config mysettings.ini
+```
+
+Any command-line argument (e.g., `--serial`, `--port`) will override the value in the config file.
 
 Once that is running, you should be able to do something like this::
 
@@ -118,5 +182,202 @@ curl "http://<your_server_address>:<port>/command?cmd=keys&keys=*&group=3"
 ```
 
 Replace `<your_server_address>` and `<port>` with your server's address and port.
+
+## Partition Support
+
+You can target specific partitions for arming, disarming, and sending keys using the `--partition` argument in the CLI, or the `partition` parameter in the HTTP API.
+
+### CLI Examples
+
+Arm partition 2 to stay:
+
+```
+concord232_client arm-stay --partition 2
+```
+
+Disarm partition 3 with master PIN:
+
+```
+concord232_client disarm --master 1234 --partition 3
+```
+
+Send keys to partition 4:
+
+```
+concord232_client keys --keys 1234* --partition 4
+```
+
+If `--partition` is not specified, partition 1 is used by default.
+
+### HTTP API Partition Parameter
+
+For the `/command` endpoint, you can specify the `partition` parameter for `cmd=keys` (and for custom arming/disarming via keypresses):
+
+- **Send keys to a specific partition:**
+  - `/command?cmd=keys&keys=<keys>&group=<group>&partition=<partition_number>`
+  - Example: To send a `*` key to partition 3:
+    `/command?cmd=keys&keys=*&group=True&partition=3`
+
+## Testing
+
+This project uses [pytest](https://pytest.org/) for testing and [uv](https://github.com/astral-sh/uv) as the Python package manager.
+
+### CLI Test Mode
+
+The CLI (`concord232_client`) supports a test mode for automated testing. If you set the environment variable `CONCORD232_TEST_MODE=1`, the CLI will use a mock client that returns fixed data and does not make any real network requests. This allows CLI tests to run reliably without requiring a running server.
+
+Example:
+
+```sh
+CONCORD232_TEST_MODE=1 python concord232_client summary
+```
+
+This is used automatically in the CLI test suite.
+
+To run the tests:
+
+```sh
+uv venv .venv
+source .venv/bin/activate
+uv pip install -e .
+uv pip install pytest
+pytest
+```
+
+For development, you can install all dev dependencies with:
+
+```sh
+uv pip install --system --dev
+```
+
+You can also run tests in CI using GitHub Actions (see `.github/workflows/ci.yml`).
+
+## Code Style, Linting, and Formatting
+
+This project uses [Ruff](https://docs.astral.sh/ruff/), [Black](https://black.readthedocs.io/), and [isort](https://pycqa.github.io/isort/) for code style, linting, and import sorting. These tools are enforced both locally and in CI.
+
+### Running Locally
+
+Install all tools:
+
+```sh
+uv pip install ruff black isort
+```
+
+Check and fix code style:
+
+```sh
+ruff check . --fix
+black .
+isort .
+```
+
+Or, to just check (without fixing):
+
+```sh
+ruff check .
+black --check .
+isort --check-only .
+```
+
+### Pre-commit Hooks
+
+To automatically run these tools before every commit, install pre-commit and set up the hooks:
+
+```sh
+uv pip install pre-commit
+pre-commit install
+pre-commit run --all-files
+```
+
+The configuration is in `.pre-commit-config.yaml`.
+
+### Continuous Integration (CI)
+
+All code style checks (Ruff, Black, isort) are run automatically in GitHub Actions CI on every push and pull request. See `.github/workflows/ci.yml` for details.
+
+### Configuration
+
+All tool configurations are in `pyproject.toml`:
+
+```toml
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = [
+    ".venv",
+    "concord232.egg-info",
+    "__pycache__",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip = [".venv", "concord232.egg-info", "__pycache__"]
+```
+
+# Badges
+
+[![CI](https://github.com/yourusername/concord232/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/concord232/actions/workflows/ci.yml)
+[![Coverage Status](https://img.shields.io/badge/coverage-27%25-yellow.svg)](coverage.xml)
+
+# Features
+
+- Control and monitor GE Concord 4 alarm panels via RS232
+- Home Assistant integration
+- HTTP API for remote control
+- Command-line client and server
+- Extensible and developer-friendly
+
+# Quick Start
+
+1. Install the package:
+
+   ```sh
+   pip install concord232
+   ```
+
+2. Connect your RS232 adapter and start the server:
+
+   ```sh
+   concord232_server --serial /dev/ttyUSB0
+   ```
+
+3. Use the client to check status:
+
+   ```sh
+   concord232_client summary
+   ```
+
+# Project Structure
+
+- `concord232/` - Core library code
+- `concord232_client` - Command-line client
+- `concord232_server` - Server exposing HTTP API
+- `tests/` - Test suite
+- `README.md` - Project documentation
+- `pyproject.toml`, `setup.py` - Packaging and configuration
+
+# Contributing
+
+Contributions are welcome! Please see `CONTRIBUTING.md` for guidelines (or create one if it does not exist). Typical steps:
+
+- Fork the repository
+- Create a new branch
+- Make your changes
+- Run tests and linting
+- Submit a pull request
+
+# License
+
+This project is licensed under the terms of the LICENSE file in this repository.
+
+# Contact & Support
+
+For questions, issues, or feature requests, please open an issue on GitHub or contact the maintainer at <your-email@example.com>.
 
 ---
