@@ -222,6 +222,18 @@ For the `/command` endpoint, you can specify the `partition` parameter for `cmd=
 
 This project uses [pytest](https://pytest.org/) for testing and [uv](https://github.com/astral-sh/uv) as the Python package manager.
 
+### CLI Test Mode
+
+The CLI (`concord232_client`) supports a test mode for automated testing. If you set the environment variable `CONCORD232_TEST_MODE=1`, the CLI will use a mock client that returns fixed data and does not make any real network requests. This allows CLI tests to run reliably without requiring a running server.
+
+Example:
+
+```sh
+CONCORD232_TEST_MODE=1 python concord232_client summary
+```
+
+This is used automatically in the CLI test suite.
+
 To run the tests:
 
 ```sh

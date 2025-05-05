@@ -5,7 +5,7 @@ import os
 import threading
 import configparser
 
-from concord232 import api
+from concord232.server import api
 from concord232 import concord
 
 LOG_FORMAT = '%(asctime)-15s %(module)s %(levelname)s %(message)s'

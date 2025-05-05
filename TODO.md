@@ -1,15 +1,17 @@
-# Codebase Improvements
+# TODO
+
+## Codebase Improvements
 
 - [x] Improve README.md with setup, usage, and contribution instructions
 - [x] Add or improve docstrings for all public modules, classes, and functions
 - [x] Generate API documentation (MkDocs)
 - [x] Increase test coverage and use coverage tools (e.g., pytest-cov)
 - [x] Organize tests logically by feature/module
-- [ ] Ensure automated testing in CI workflows
+- [x] Ensure automated testing in CI workflows
 - [x] Use linters and formatters (Ruff, Black, isort) for code style
 - [ ] Add type hints and use mypy for static type checking
-- [ ] Set up pre-commit hooks for linting, formatting, and tests
-- [ ] Ensure clear separation between client and server code
+- [x] Set up pre-commit hooks for linting, formatting, and tests
+- [x] Ensure clear separation between client and server code
 - [x] Define CLI entry points in  pyproject.toml
 - [x] Use configuration files instead of hardcoding settings
 - [ ] Pin dependency versions for reproducibility
@@ -24,7 +26,7 @@
 - [ ] Add CONTRIBUTING.md for external contributors
 - [ ] Maintain a CHANGELOG.md for tracking changes
 
-# Features
+## Features
 
 - [ ] Enable switching keypad to a different partition
 - [x] Add partition support to the client

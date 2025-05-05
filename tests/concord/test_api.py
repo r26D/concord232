@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from concord232 import api
+from concord232.server import api
 
 @pytest.fixture
 def client():
