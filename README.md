@@ -173,4 +173,96 @@ uv pip install --system --dev
 
 You can also run tests in CI using GitHub Actions (see `.github/workflows/ci.yml`).
 
+## Linting
+
+This project uses [ruff](https://docs.astral.sh/ruff/) for linting and code style enforcement.
+
+To check code style and lint your code, run:
+
+```sh
+uv pip install ruff
+ruff .
+```
+
+You can also automatically fix some issues with:
+
+```sh
+ruff check . --fix
+```
+
+The linter is configured in `pyproject.toml`:
+
+```toml
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = [
+    ".venv",
+    "concord232.egg-info",
+    "__pycache__",
+]
+```
+
+> **Note:** Linting is not currently run automatically in CI, so please run it locally before submitting changes.
+
+# Badges
+<!-- Example badges, replace with actual URLs as needed -->
+[![Build Status](https://img.shields.io/github/workflow/status/yourusername/concord232/CI)](https://github.com/yourusername/concord232/actions)
+[![Coverage Status](https://img.shields.io/coveralls/github/yourusername/concord232/main.svg)](https://coveralls.io/github/yourusername/concord232?branch=main)
+
+# Features
+
+- Control and monitor GE Concord 4 alarm panels via RS232
+- Home Assistant integration
+- HTTP API for remote control
+- Command-line client and server
+- Extensible and developer-friendly
+
+# Quick Start
+
+1. Install the package:
+
+   ```sh
+   pip install concord232
+   ```
+
+2. Connect your RS232 adapter and start the server:
+
+   ```sh
+   concord232_server --serial /dev/ttyUSB0
+   ```
+
+3. Use the client to check status:
+
+   ```sh
+   concord232_client summary
+   ```
+
+# Project Structure
+
+- `concord232/` - Core library code
+- `concord232_client` - Command-line client
+- `concord232_server` - Server exposing HTTP API
+- `tests/` - Test suite
+- `README.md` - Project documentation
+- `pyproject.toml`, `setup.py` - Packaging and configuration
+
+# Contributing
+
+Contributions are welcome! Please see `CONTRIBUTING.md` for guidelines (or create one if it does not exist). Typical steps:
+
+- Fork the repository
+- Create a new branch
+- Make your changes
+- Run tests and linting
+- Submit a pull request
+
+# License
+
+This project is licensed under the terms of the LICENSE file in this repository.
+
+# Contact & Support
+
+For questions, issues, or feature requests, please open an issue on GitHub or contact the maintainer at <your-email@example.com>.
+
 ---
