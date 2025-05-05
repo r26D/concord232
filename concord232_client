@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import argparse
+import logging
 import os
-import pprint
 
 import prettytable
 
@@ -40,13 +40,15 @@ def parse_args():
 
 
 def do_list(clnt, args):
+    logger = logging.getLogger("client")
     for zone in clnt.list_zones():
-        pprint.pprint(zone)
+        logger.info(zone)
 
 
 def do_list_partitions(clnt, args):
+    logger = logging.getLogger("client")
     for part in clnt.list_partitions():
-        pprint.pprint(part)
+        logger.info(part)
 
 
 def do_arm(clnt, args):
@@ -77,8 +79,9 @@ def do_arm(clnt, args):
 
 
 def do_disarm(clnt, args):
+    logger = logging.getLogger("client")
     if not args.master:
-        print("Master pin required")
+        logger.error("Master pin required")
         return
     partition = args.partition if args.partition is not None else 1
     # Disarm by sending the master pin as keys to the specified partition
@@ -86,19 +89,21 @@ def do_disarm(clnt, args):
 
 
 def do_keys(clnt, args):
+    logger = logging.getLogger("client")
     group = (
         args.group.lower() == "true"
         if isinstance(args.group, str)
         else bool(args.group)
     )
     if not args.keys:
-        print("Keys required")
+        logger.error("Keys required")
         return
     partition = args.partition if args.partition is not None else 1
     clnt.send_keys(args.keys, group, partition=partition)
 
 
 def do_summary(clnt, args):
+    logger = logging.getLogger("client")
     t = prettytable.PrettyTable(["Zone", "Name", "Bypass", "Status", "Type"])
     for zone in sorted(clnt.list_zones(), key=lambda k: k["number"]):
         t.add_row(
@@ -110,7 +115,7 @@ def do_summary(clnt, args):
                 zone["type"],
             ]
         )
-    print(t)
+    logger.info("\n" + str(t))
 
     t = prettytable.PrettyTable(["Partition", "Zones", "Status", "Level"])
     for i, part in enumerate(clnt.list_partitions()):
@@ -120,36 +125,39 @@ def do_summary(clnt, args):
                 ["%i" % part["number"], part["zones"], status, part["arming_level"]]
             )
 
-    print(t)
+    logger.info("\n" + str(t))
 
 
 def do_show(clnt, args):
+    logger = logging.getLogger("client")
     if args.zone:
         for zone in clnt.list_zones():
             if zone["number"] == args.zone:
-                pprint.pprint(zone)
+                logger.info(zone)
                 return
-        print("No such zone `%s'" % args.zone)
+        logger.error("No such zone `%s'", args.zone)
     elif args.partition:
         for part in clnt.list_partitions():
             if part["number"] == args.partition:
-                pprint.pprint(part)
+                logger.info(part)
                 return
-        print("No such partition `%s'" % args.partition)
+        logger.error("No such partition `%s'", args.partition)
     else:
-        print("Zone or Partition required")
+        logger.error("Zone or Partition required")
 
 
 def do_events(clnt, args):
+    logger = logging.getLogger("client")
     while True:
         events = clnt.get_events()
         if events:
             for event in events:
-                print(event)
+                logger.info(event)
 
 
 def do_version(clnt, args):
-    print(clnt.get_version())
+    logger = logging.getLogger("client")
+    logger.info(clnt.get_version())
 
 
 # --- TEST MODE SUPPORT ---
@@ -180,6 +188,9 @@ class MockClient:
 
 
 def main():
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s"
+    )
     args = parse_args()
     url = "http://%s:%s" % tuple(args.host.split(":", 1))
     # Use mock client if test mode is enabled

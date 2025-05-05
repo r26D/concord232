@@ -65,11 +65,11 @@ def patch_client(monkeypatch):
 def test_summary_output():
     result = run_cli(["summary"])
     assert result.returncode == 0
-    assert "Zone" in result.stdout
-    assert "Front" in result.stdout
-    assert "Garage" in result.stdout
-    assert "Partition" in result.stdout
-    assert "Stay" in result.stdout or "Off" in result.stdout
+    assert "Zone" in result.stderr
+    assert "Front" in result.stderr
+    assert "Garage" in result.stderr
+    assert "Partition" in result.stderr
+    assert "Stay" in result.stderr or "Off" in result.stderr
 
 
 def test_arm_stay_partition():
@@ -80,7 +80,7 @@ def test_arm_stay_partition():
 def test_disarm_requires_master():
     result = run_cli(["disarm"])
     assert result.returncode == 0
-    assert "Master pin required" in result.stdout
+    assert "Master pin required" in result.stderr
 
 
 def test_disarm_with_master():
@@ -91,7 +91,7 @@ def test_disarm_with_master():
 def test_keys_requires_keys():
     result = run_cli(["keys"])
     assert result.returncode == 0
-    assert "Keys required" in result.stdout
+    assert "Keys required" in result.stderr
 
 
 def test_keys_with_args():
@@ -102,4 +102,4 @@ def test_keys_with_args():
 def test_version():
     result = run_cli(["version"])
     assert result.returncode == 0
-    assert "1.2.3" in result.stdout
+    assert "1.2.3" in result.stderr

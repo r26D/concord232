@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Migrated all CLI and codebase output from print statements to structured logging using the logging module.
+- Updated CLI tests to check stderr for log output instead of stdout, ensuring compatibility with structured logging.
 - Implemented test mode support in the CLI and refactored client import logic.
 - Updated TODO.md to include new features and codebase improvements.
 - Added partition support to the client and updated documentation.
