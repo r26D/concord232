@@ -6,11 +6,13 @@ try:
     import ConfigParser as configparser
 except ImportError:
     import configparser
+
 import email
 import email.mime
 import email.mime.text
 import email.utils
 import smtplib
+from typing import Any, List, Set
 
 
 class MissingEmailConfig(Exception):
@@ -19,7 +21,7 @@ class MissingEmailConfig(Exception):
     pass
 
 
-def _send_system_email(config, subject, recips, body):
+def _send_system_email(config: Any, subject: str, recips: List[str], body: str) -> None:
     """
     Send an email with the given subject and body to the specified recipients using the provided config.
     Args:
@@ -49,7 +51,7 @@ def _send_system_email(config, subject, recips, body):
     smtp.quit()
 
 
-def send_system_email(config, deasserted, asserted):
+def send_system_email(config: Any, deasserted: Set[str], asserted: Set[str]) -> None:
     """
     Send a system alert email listing asserted and deasserted flags.
     Args:
@@ -81,7 +83,9 @@ def send_system_email(config, deasserted, asserted):
         pass
 
 
-def send_partition_email(config, partition, deasserted, asserted):
+def send_partition_email(
+    config: Any, partition: Any, deasserted: Set[str], asserted: Set[str]
+) -> None:
     """
     Send a partition alert email for a specific partition, listing asserted and deasserted flags.
     Args:
@@ -130,7 +134,9 @@ def send_partition_email(config, partition, deasserted, asserted):
         pass
 
 
-def send_partition_status_email(config, partition, recip_key, sub, message):
+def send_partition_status_email(
+    config: Any, partition: Any, recip_key: str, sub: str, message: str
+) -> None:
     """
     Send a status email for a specific partition with a custom subject and message.
     Args:
@@ -155,7 +161,7 @@ def send_partition_status_email(config, partition, recip_key, sub, message):
         pass
 
 
-def send_log_event_mail(config, event):
+def send_log_event_mail(config: Any, event: Any) -> None:
     """
     Send an email for a log event if it matches configured alarm or event types.
     Args:
@@ -192,4 +198,4 @@ def send_log_event_mail(config, event):
 
     body = "%s at %s" % (event.event_string, event.timestamp)
 
-    _send_system_email(config, "Security: %s" % event.event, emails, body)
+    _send_system_email(config, "Security: %s" % event.event, list(emails), body)

@@ -40,8 +40,8 @@ def test_num_to_bytes():
 
 def test_build_state_list():
     d = {0: "A", 1: "B"}
-    assert concord_commands.build_state_list(1, d) == "B"
-    assert concord_commands.build_state_list(2, d) == "Unknown"
+    assert concord_commands.build_state_list(1, d) == ["B"]
+    assert concord_commands.build_state_list(2, d) == ["Unknown"]
 
 
 def test_decode_alarm_type():

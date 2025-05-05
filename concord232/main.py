@@ -11,7 +11,7 @@ from concord232.server import api
 LOG_FORMAT = "%(asctime)-15s %(module)s %(levelname)s %(message)s"
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="GE Concord 4 RS232 Serial Interface Server. Provides a Flask API for interacting with the alarm panel.",
         epilog="""

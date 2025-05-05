@@ -7,7 +7,6 @@ class DualJSONMock:
     def __init__(self, value):
         self._value = value
 
-    @property
     def json(self):
         return self._value
 
@@ -81,7 +80,7 @@ def test_arm_partition(mock_session):
     assert result is True
     # Check that partition param was sent
     args, kwargs = mock_instance.get.call_args
-    assert kwargs["params"]["partition"] == 2
+    assert kwargs["params"]["partition"] == "2"
 
 
 @patch("concord232.client.client.requests.Session")
@@ -93,7 +92,7 @@ def test_disarm_partition(mock_session):
     result = client.send_keys("1234", group=True, partition=3)
     assert result is True
     args, kwargs = mock_instance.get.call_args
-    assert kwargs["params"]["partition"] == 3
+    assert kwargs["params"]["partition"] == "3"
 
 
 @patch("concord232.client.client.requests.Session")
@@ -105,4 +104,4 @@ def test_send_keys_partition(mock_session):
     result = client.send_keys("99*", group=False, partition=4)
     assert result is True
     args, kwargs = mock_instance.get.call_args
-    assert kwargs["params"]["partition"] == 4
+    assert kwargs["params"]["partition"] == "4"

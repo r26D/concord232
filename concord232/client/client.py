@@ -1,3 +1,5 @@
+from typing import Any, Dict, List, Optional, cast
+
 import requests
 
 
@@ -7,7 +9,7 @@ class Client(object):
     Provides methods to list zones, partitions, arm/disarm, send keys, and get version info.
     """
 
-    def __init__(self, url):
+    def __init__(self, url: str) -> None:
         """
         Initialize the client with the server URL.
         Args:
@@ -17,31 +19,27 @@ class Client(object):
         self._session = requests.Session()
         self._last_event_index = 0
 
-    def list_zones(self):
+    def list_zones(self) -> List[Dict[str, Any]]:
         """
         Retrieve the list of zones from the server.
         Returns:
             list: List of zone dictionaries.
         """
         r = self._session.get(self._url + "/zones")
-        try:
-            return r.json["zones"]
-        except TypeError:
-            return r.json()["zones"]
+        data = r.json()
+        return cast(List[Dict[str, Any]], data["zones"])
 
-    def list_partitions(self):
+    def list_partitions(self) -> List[Dict[str, Any]]:
         """
         Retrieve the list of partitions from the server.
         Returns:
             list: List of partition dictionaries.
         """
         r = self._session.get(self._url + "/partitions")
-        try:
-            return r.json["partitions"]
-        except TypeError:
-            return r.json()["partitions"]
+        data = r.json()
+        return cast(List[Dict[str, Any]], data["partitions"])
 
-    def arm(self, level, option=None):
+    def arm(self, level: str, option: Optional[str] = None) -> bool:
         """
         Arm the system to the specified level with an optional option.
         Args:
@@ -50,13 +48,13 @@ class Client(object):
         Returns:
             bool: True if successful, False otherwise.
         """
-        r = self._session.get(
-            self._url + "/command",
-            params={"cmd": "arm", "level": level, "option": option},
-        )
+        params: Dict[str, str] = {"cmd": "arm", "level": level}
+        if option is not None:
+            params["option"] = option
+        r = self._session.get(self._url + "/command", params=params)
         return r.status_code == 200
 
-    def disarm(self, master_pin):
+    def disarm(self, master_pin: str) -> bool:
         """
         Disarm the system using the master PIN.
         Args:
@@ -64,12 +62,11 @@ class Client(object):
         Returns:
             bool: True if successful, False otherwise.
         """
-        r = self._session.get(
-            self._url + "/command", params={"cmd": "disarm", "master_pin": master_pin}
-        )
+        params: Dict[str, str] = {"cmd": "disarm", "master_pin": master_pin}
+        r = self._session.get(self._url + "/command", params=params)
         return r.status_code == 200
 
-    def send_keys(self, keys, group=False, partition=1):
+    def send_keys(self, keys: str, group: bool = False, partition: int = 1) -> bool:
         """
         Send keypresses to the panel.
         Args:
@@ -79,18 +76,16 @@ class Client(object):
         Returns:
             bool: True if successful, False otherwise.
         """
-        r = self._session.get(
-            self._url + "/command",
-            params={
-                "cmd": "keys",
-                "keys": keys,
-                "group": group,
-                "partition": partition,
-            },
-        )
+        params: Dict[str, str] = {
+            "cmd": "keys",
+            "keys": keys,
+            "group": str(group).lower(),
+            "partition": str(partition),
+        }
+        r = self._session.get(self._url + "/command", params=params)
         return r.status_code == 200
 
-    def get_version(self):
+    def get_version(self) -> str:
         """
         Get the API version from the server.
         Returns:
@@ -100,4 +95,5 @@ class Client(object):
         if r.status_code == 404:
             return "1.0"
         else:
-            return r.json()["version"]
+            data = r.json()
+            return cast(str, data["version"])

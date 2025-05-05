@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Linted code and ensured all tests passed.
 - Updated pyproject.toml to include pytest as a dev dependency, enhanced README with testing instructions, and modified setup.py to support dev dependencies.
 - Added a system diagram to the documentation.
+- Added CI workflow to ensure code quality and test coverage.
+- Added type hints to all major source files and enabled mypy static type checking. The codebase is now fully type-annotated and mypy clean.
 
 ## [0.1.0] - YYYY-MM-DD
 

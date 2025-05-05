@@ -14,7 +14,7 @@ def client():
 
 def test_list_zones_json_method(client):
     resp = MagicMock()
-    resp.json = {"zones": [1, 2]}
+    resp.json = lambda: {"zones": [1, 2]}
     client._session.get.return_value = resp
     assert client.list_zones() == [1, 2]
 
@@ -28,7 +28,7 @@ def test_list_zones_json_callable(client):
 
 def test_list_partitions_json_method(client):
     resp = MagicMock()
-    resp.json = {"partitions": [1, 2]}
+    resp.json = lambda: {"partitions": [1, 2]}
     client._session.get.return_value = resp
     assert client.list_partitions() == [1, 2]
 

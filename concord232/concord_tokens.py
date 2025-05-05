@@ -229,7 +229,7 @@ TOKENS = {
 }
 
 
-def decode_text_tokens(tokens):
+def decode_text_tokens(tokens: list[int]) -> str:
     """
     Convert a list of token codes to a human-readable string, handling special tokens like backspace and pseudo-space.
     Args:

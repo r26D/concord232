@@ -5,16 +5,20 @@ Flask API for the concord232 server. Provides endpoints for panel, zones, partit
 import json
 import logging
 import time
+from typing import Any, Optional
 
 import flask
+from flask import Response
+
+from concord232.concord import AlarmPanelInterface
 
 LOG = logging.getLogger("api")
-CONTROLLER = None
+CONTROLLER: Optional[AlarmPanelInterface] = None
 app = flask.Flask("concord232")
 LOG.info("API Code Loaded")
 
 
-def show_zone(zone):
+def show_zone(zone: dict[str, Any]) -> dict[str, Any]:
     """
     Convert a zone dictionary to a JSON-serializable dict for API response.
     Args:
@@ -36,7 +40,7 @@ def show_zone(zone):
     }
 
 
-def show_partition(partition):
+def show_partition(partition: dict[str, Any]) -> dict[str, Any]:
     """
     Convert a partition dictionary to a JSON-serializable dict for API response.
     Args:
@@ -50,34 +54,42 @@ def show_partition(partition):
         "arming_level": partition["arming_level"],
         "arming_level_code": partition["arming_level_code"],
         "partition_text": partition["partition_text"],
-        "zones": sum(
-            z["partition_number"] == partition["partition_number"]
-            for z in CONTROLLER.zones.values()
+        "zones": (
+            sum(
+                z["partition_number"] == partition["partition_number"]
+                for z in CONTROLLER.zones.values()
+            )
+            if CONTROLLER is not None and hasattr(CONTROLLER, "zones")
+            else 0
         ),
     }
 
 
 @app.route("/panel")
-def index_panel():
+def index_panel() -> Any:
     """
     API endpoint to get the panel state.
     Returns:
         flask.Response: JSON response with panel state.
     """
+    if CONTROLLER is None:
+        return Response("Controller not initialized", status=503)
     try:
         result = json.dumps({"panel": CONTROLLER.panel})
-        return flask.Response(result, mimetype="application/json")
+        return Response(result, mimetype="application/json")
     except Exception:
         LOG.exception("Failed to index zones")
 
 
 @app.route("/zones")
-def index_zones():
+def index_zones() -> Any:
     """
     API endpoint to get all zones.
     Returns:
         flask.Response: JSON response with all zones.
     """
+    if CONTROLLER is None:
+        return Response("Controller not initialized", status=503)
     try:
         if not bool(CONTROLLER.zones):
             CONTROLLER.request_zones()
@@ -88,18 +100,20 @@ def index_zones():
         result = json.dumps(
             {"zones": [show_zone(zone) for zone in CONTROLLER.zones.values()]}
         )
-        return flask.Response(result, mimetype="application/json")
+        return Response(result, mimetype="application/json")
     except Exception:
         LOG.exception("Failed to index zones")
 
 
 @app.route("/partitions")
-def index_partitions():
+def index_partitions() -> Any:
     """
     API endpoint to get all partitions.
     Returns:
         flask.Response: JSON response with all partitions.
     """
+    if CONTROLLER is None:
+        return Response("Controller not initialized", status=503)
     try:
         if not bool(CONTROLLER.partitions):
             CONTROLLER.request_partitions()
@@ -115,18 +129,20 @@ def index_partitions():
                 ]
             }
         )
-        return flask.Response(result, mimetype="application/json")
+        return Response(result, mimetype="application/json")
     except Exception:
         LOG.exception("Failed to index partitions")
 
 
 @app.route("/command")
-def command():
+def command() -> Any:
     """
     API endpoint to send commands (arm, disarm, keys) to the panel.
     Returns:
         flask.Response: Empty response.
     """
+    if CONTROLLER is None:
+        return Response("Controller not initialized", status=503)
     args = flask.request.args
     if args.get("cmd") == "arm":
         option = args.get("option")
@@ -135,15 +151,24 @@ def command():
         elif args.get("level") == "away":
             CONTROLLER.arm_away(option)
     elif args.get("cmd") == "disarm":
-        CONTROLLER.disarm(args.get("master_pin"))
+        master_pin = args.get("master_pin")
+        if master_pin is not None:
+            CONTROLLER.disarm(str(master_pin))
+        else:
+            return Response("Missing master_pin", status=400)
     elif args.get("cmd") == "keys":
+        keys = args.get("keys")
+        group = args.get("group")
         partition = int(args.get("partition", 1))
-        CONTROLLER.send_keys(args.get("keys"), args.get("group"), partition=partition)
-    return flask.Response()
+        keys_list = list(keys) if keys is not None else []
+        CONTROLLER.send_keys(
+            keys_list, bool(group) if group is not None else False, partition=partition
+        )
+    return Response()
 
 
 @app.route("/version")
-def get_version():
+def get_version() -> Any:
     """
     API endpoint to get the API version.
     Returns:
@@ -153,22 +178,26 @@ def get_version():
 
 
 @app.route("/equipment")
-def get_equipment():
+def get_equipment() -> Any:
     """
     API endpoint to request all equipment data from the panel.
     Returns:
         flask.Response: Empty response.
     """
+    if CONTROLLER is None:
+        return Response("Controller not initialized", status=503)
     CONTROLLER.request_all_equipment()
-    return flask.Response()
+    return Response()
 
 
 @app.route("/all_data")
-def get_all_data():
+def get_all_data() -> Any:
     """
     API endpoint to request a dynamic data refresh from the panel.
     Returns:
         flask.Response: Empty response.
     """
+    if CONTROLLER is None:
+        return Response("Controller not initialized", status=503)
     CONTROLLER.request_dynamic_data_refresh()
-    return flask.Response()
+    return Response()
