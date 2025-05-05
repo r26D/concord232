@@ -4,7 +4,7 @@
 - [x] Add or improve docstrings for all public modules, classes, and functions
 - [x] Generate API documentation (MkDocs)
 - [ ] Increase test coverage and use coverage tools (e.g., pytest-cov)
-- [ ] Organize tests logically by feature/module
+- [x] Organize tests logically by feature/module
 - [ ] Ensure automated testing in CI workflows
 - [ ] Use linters and formatters (Ruff, Black, isort) for code style
 - [ ] Add type hints and use mypy for static type checking

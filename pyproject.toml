@@ -16,6 +16,15 @@ exclude = [
     "__pycache__",
 ]
 
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip = [".venv", "concord232.egg-info", "__pycache__"]
+
 [tool.mkdocs]
 # MkDocs configuration section (if not present)
 
