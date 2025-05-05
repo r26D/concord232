@@ -1,5 +1,4 @@
 from concord232 import model
-import datetime
 
 def test_zone_bypassed():
     z = model.Zone(1)

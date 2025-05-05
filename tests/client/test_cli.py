@@ -1,7 +1,6 @@
 import subprocess
 import sys
 import os
-from unittest import mock
 import pytest
 
 CONCORD_CLIENT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../concord232_client'))
