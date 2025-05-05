@@ -6,6 +6,7 @@ class Client(object):
     Client for interacting with the concord232 server HTTP API.
     Provides methods to list zones, partitions, arm/disarm, send keys, and get version info.
     """
+
     def __init__(self, url):
         """
         Initialize the client with the server URL.
@@ -22,11 +23,11 @@ class Client(object):
         Returns:
             list: List of zone dictionaries.
         """
-        r = self._session.get(self._url + '/zones')
+        r = self._session.get(self._url + "/zones")
         try:
-            return r.json['zones']
+            return r.json["zones"]
         except TypeError:
-            return r.json()['zones']
+            return r.json()["zones"]
 
     def list_partitions(self):
         """
@@ -34,13 +35,13 @@ class Client(object):
         Returns:
             list: List of partition dictionaries.
         """
-        r = self._session.get(self._url + '/partitions')
+        r = self._session.get(self._url + "/partitions")
         try:
-            return r.json['partitions']
+            return r.json["partitions"]
         except TypeError:
-            return r.json()['partitions']
+            return r.json()["partitions"]
 
-    def arm(self, level, option = None):
+    def arm(self, level, option=None):
         """
         Arm the system to the specified level with an optional option.
         Args:
@@ -50,10 +51,9 @@ class Client(object):
             bool: True if successful, False otherwise.
         """
         r = self._session.get(
-            self._url + '/command',
-            params={'cmd': 'arm',
-                    'level': level,
-                    'option': option})
+            self._url + "/command",
+            params={"cmd": "arm", "level": level, "option": option},
+        )
         return r.status_code == 200
 
     def disarm(self, master_pin):
@@ -65,9 +65,8 @@ class Client(object):
             bool: True if successful, False otherwise.
         """
         r = self._session.get(
-            self._url + '/command',
-            params={'cmd': 'disarm',
-                    'master_pin': master_pin})
+            self._url + "/command", params={"cmd": "disarm", "master_pin": master_pin}
+        )
         return r.status_code == 200
 
     def send_keys(self, keys, group=False, partition=1):
@@ -81,11 +80,14 @@ class Client(object):
             bool: True if successful, False otherwise.
         """
         r = self._session.get(
-            self._url + '/command',
-            params={'cmd': 'keys',
-                    'keys': keys,
-                    'group': group,
-                    'partition': partition})
+            self._url + "/command",
+            params={
+                "cmd": "keys",
+                "keys": keys,
+                "group": group,
+                "partition": partition,
+            },
+        )
         return r.status_code == 200
 
     def get_version(self):
@@ -94,8 +96,8 @@ class Client(object):
         Returns:
             str: Version string.
         """
-        r = self._session.get(self._url + '/version')
+        r = self._session.get(self._url + "/version")
         if r.status_code == 404:
-            return '1.0'
+            return "1.0"
         else:
-            return r.json()['version']
+            return r.json()["version"]

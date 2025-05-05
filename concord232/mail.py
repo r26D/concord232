@@ -1,6 +1,7 @@
 """
 Email notification utilities for concord232. Handles sending system, partition, and log event emails based on configuration.
 """
+
 try:
     import ConfigParser as configparser
 except ImportError:
@@ -14,6 +15,7 @@ import smtplib
 
 class MissingEmailConfig(Exception):
     """Raised when required email configuration is missing."""
+
     pass
 
 
@@ -29,19 +31,18 @@ def _send_system_email(config, subject, recips, body):
         MissingEmailConfig: If required config options are missing.
     """
     try:
-        fromaddr = config.get('email', 'fromaddr')
-        smtphost = config.get('email', 'smtphost')
-    except (configparser.NoOptionError,
-            configparser.NoSectionError):
+        fromaddr = config.get("email", "fromaddr")
+        smtphost = config.get("email", "smtphost")
+    except (configparser.NoOptionError, configparser.NoSectionError):
         raise MissingEmailConfig()
 
     msg = email.mime.text.MIMEText(body)
-    msg['Subject'] = subject
-    msg['From'] = fromaddr
-    msg['Date'] = email.utils.formatdate()
-    msg['Message-Id'] = email.utils.make_msgid('concord232')
+    msg["Subject"] = subject
+    msg["From"] = fromaddr
+    msg["Date"] = email.utils.formatdate()
+    msg["Message-Id"] = email.utils.make_msgid("concord232")
     for addr in recips:
-        msg['To'] = addr
+        msg["To"] = addr
 
     smtp = smtplib.SMTP(smtphost)
     smtp.sendmail(fromaddr, recips, msg.as_string())
@@ -57,25 +58,25 @@ def send_system_email(config, deasserted, asserted):
         asserted (set): Flags that are now asserted.
     """
     try:
-        emails = config.get('email', 'system').split(',')
-    except (configparser.NoOptionError,
-            configparser.NoSectionError):
+        emails = config.get("email", "system").split(",")
+    except (configparser.NoOptionError, configparser.NoSectionError):
         return
 
     if not emails:
         return
 
-    body = ('Security System alert.\n' +
-            '\n' +
-            'The following new flags have been asserted:\n' +
-            ('%s\n' % ','.join(asserted)) +
-            '\n' +
-            'The following flags are now de-asserted:\n' +
-            ('%s\n' % ','.join(deasserted)))
+    body = (
+        "Security System alert.\n"
+        + "\n"
+        + "The following new flags have been asserted:\n"
+        + ("%s\n" % ",".join(asserted))
+        + "\n"
+        + "The following flags are now de-asserted:\n"
+        + ("%s\n" % ",".join(deasserted))
+    )
 
     try:
-        _send_system_email(config, 'Security System Alert',
-                           emails, body)
+        _send_system_email(config, "Security System Alert", emails, body)
     except MissingEmailConfig:
         pass
 
@@ -90,15 +91,14 @@ def send_partition_email(config, partition, deasserted, asserted):
         asserted (set): Flags that are now asserted.
     """
     try:
-        emails = config.get('partition_%i' % partition.number,
-                            'flags').split(',')
-    except (configparser.NoOptionError,
-            configparser.NoSectionError):
+        emails = config.get("partition_%i" % partition.number, "flags").split(",")
+    except (configparser.NoOptionError, configparser.NoSectionError):
         return
 
     try:
-        ignore = set(config.get('partition_%i' % partition.number,
-                                'ignore_flags').split(','))
+        ignore = set(
+            config.get("partition_%i" % partition.number, "ignore_flags").split(",")
+        )
     except configparser.NoOptionError:
         ignore = set([])
 
@@ -109,19 +109,23 @@ def send_partition_email(config, partition, deasserted, asserted):
     if not emails:
         return
 
-    body = ('Security System partition %i alert.\n' % partition.number +
-            '\n' +
-            'The following new flags have been asserted:\n' +
-            ('%s\n' % ','.join(asserted)) +
-            '\n' +
-            'The following flags are now de-asserted:\n' +
-            ('%s\n' % ','.join(deasserted)))
+    body = (
+        "Security System partition %i alert.\n" % partition.number
+        + "\n"
+        + "The following new flags have been asserted:\n"
+        + ("%s\n" % ",".join(asserted))
+        + "\n"
+        + "The following flags are now de-asserted:\n"
+        + ("%s\n" % ",".join(deasserted))
+    )
 
     try:
         _send_system_email(
             config,
-            'Security System Partition %i Alert' % partition.number,
-            emails, body)
+            "Security System Partition %i Alert" % partition.number,
+            emails,
+            body,
+        )
     except MissingEmailConfig:
         pass
 
@@ -137,21 +141,16 @@ def send_partition_status_email(config, partition, recip_key, sub, message):
         message (str): Email body.
     """
     try:
-        emails = config.get('partition_%i' % partition.number,
-                            recip_key).split(',')
-    except (configparser.NoOptionError,
-            configparser.NoSectionError):
+        emails = config.get("partition_%i" % partition.number, recip_key).split(",")
+    except (configparser.NoOptionError, configparser.NoSectionError):
         return
 
     if not emails:
         return
 
-    body = 'Security System alert:\n%s' % message
+    body = "Security System alert:\n%s" % message
     try:
-        _send_system_email(
-            config,
-            'Security: %s' % sub,
-            emails, body)
+        _send_system_email(config, "Security: %s" % sub, emails, body)
     except MissingEmailConfig:
         pass
 
@@ -164,17 +163,23 @@ def send_log_event_mail(config, event):
         event: LogEvent object with 'event', 'event_string', and 'timestamp' attributes.
     """
     try:
-        alarm_emails = set(config.get('email', 'alarms').split(','))
+        alarm_emails = set(config.get("email", "alarms").split(","))
     except (configparser.NoOptionError, configparser.NoSectionError):
         alarm_emails = set([])
 
     try:
-        alarm_events = set(config.get('email', 'alarm_events').split(','))
+        alarm_events = set(config.get("email", "alarm_events").split(","))
     except (configparser.NoOptionError, configparser.NoSectionError):
-        alarm_events = set(['Alarm', 'Alarm restore', 'Manual fire',])
+        alarm_events = set(
+            [
+                "Alarm",
+                "Alarm restore",
+                "Manual fire",
+            ]
+        )
 
     try:
-        event_emails = set(config.get('email', 'events').split(','))
+        event_emails = set(config.get("email", "events").split(","))
     except (configparser.NoOptionError, configparser.NoSectionError):
         event_emails = set([])
 
@@ -185,8 +190,6 @@ def send_log_event_mail(config, event):
     if not emails:
         return
 
-    body = '%s at %s' % (event.event_string, event.timestamp)
+    body = "%s at %s" % (event.event_string, event.timestamp)
 
-    _send_system_email(
-        config, 'Security: %s' % event.event,
-        emails, body)
+    _send_system_email(config, "Security: %s" % event.event, emails, body)

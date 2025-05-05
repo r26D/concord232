@@ -2,9 +2,12 @@
 Helper functions and exceptions for concord232, including hex/ascii conversion and timedelta utilities.
 """
 
+
 class BadMessageException(Exception):
     """Raised when a message is malformed or invalid."""
+
     pass
+
 
 def ascii_hex_to_byte(ascii_bytes):
     """
@@ -18,7 +21,6 @@ def ascii_hex_to_byte(ascii_bytes):
     """
     assert len(ascii_bytes) >= 2
     return int(ascii_bytes[0] + ascii_bytes[1], 16)
-    
 
 
 def total_secs(td):
@@ -29,6 +31,4 @@ def total_secs(td):
     Returns:
         float: Total seconds represented by the timedelta.
     """
-    return td.days*3600*24 + td.seconds + td.microseconds/1.0e6
-
-
+    return td.days * 3600 * 24 + td.seconds + td.microseconds / 1.0e6
