@@ -151,23 +151,26 @@ curl "http://<your_server_address>:<port>/command?cmd=keys&keys=*&group=3"
 
 Replace `<your_server_address>` and `<port>` with your server's address and port.
 
-## Running Tests
+## Testing
 
 This project uses [pytest](https://pytest.org/) for testing and [uv](https://github.com/astral-sh/uv) as the Python package manager.
 
 To run the tests:
 
 ```sh
-uv pip install --system pytest  # (if not already installed)
+uv venv .venv
+source .venv/bin/activate
+uv pip install -e .
+uv pip install pytest
 pytest
 ```
 
 For development, you can install all dev dependencies with:
 
 ```sh
-uv pip install --system -r requirements-dev.txt  # (if you create one)
-# or, since dev dependencies are in pyproject.toml:
 uv pip install --system --dev
 ```
+
+You can also run tests in CI using GitHub Actions (see `.github/workflows/ci.yml`).
 
 ---

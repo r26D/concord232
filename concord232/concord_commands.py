@@ -1,11 +1,10 @@
-import datetime
-
 """
 List of command codes and handler functions for commands sent to and
 from the alarm panel, plus code to tect mappings.
 """
 
-from concord232.concord_helpers import BadMessageException, ascii_hex_to_byte
+import datetime
+from concord232.concord_helpers import BadMessageException
 from concord232.concord_tokens import decode_text_tokens
 from concord232.concord_alarm_codes import ALARM_CODES
 
@@ -75,7 +74,6 @@ CAPABILITY_CODES = {
     0x07: ("Energy Management", None),
     0x08: ("Input Zones", "Number of inputs"),
     0x09: ("Phast/Automation/System Manager", None),
-    0x00: ("Phone Interface", None),
     0x0b: ("Relay Outputs", "Number of outputs"),
     0x0c: ("RF Receiver", None),
     0x0d: ("RF Transmitter", None),
@@ -266,7 +264,7 @@ def cmd_panel_type(self,msg):
     d['software_revision'] = sw_rev
     d['serial_number'] = bytes_to_num(msg[7:])
 
-    self.panel = d;
+    self.panel = d
     return d
 
 def cmd_automation_event_lost(self,msg):
@@ -280,7 +278,7 @@ def cmd_automation_event_lost(self,msg):
 def build_state_list(state_code, state_dict):
     states = 'Unknown'
     if state_code in state_dict:
-        return state_dict[state_code];
+        return state_dict[state_code]
     return states
 
 def cmd_zone_status(self,msg):
@@ -306,7 +304,7 @@ def cmd_zone_status(self,msg):
         self.zones[identifier] = z
     else:
         self.zones[identifier]['zone_state'] = d['zone_state']
-    return d;
+    return d
 
 def cmd_zone_data(self, msg):
     ck_msg_len(msg, 0x03, 0x09, exact_len=False)
@@ -326,7 +324,7 @@ def cmd_zone_data(self, msg):
     
     identifier = 'p' + str(d['partition_number']) + 'z' + str(d['zone_number'])
     self.zones[identifier] = d
-    return d;
+    return d
     
 def cmd_arming_level(self,msg):
     ck_msg_len(msg, (0x22, 0x01), 0x08)
@@ -397,7 +395,7 @@ def cmd_entry_exit_delay(self,msg):
         v.append('start delay')
 
     d['delay_flags'] = v
-    return d;
+    return d
 
 def cmd_alarm_trouble(self,msg):
     assert (msg[1], msg[2]) == (0x22, 0x02), "Unexpected command type"
@@ -516,7 +514,7 @@ def cmd_feat_state(self,msg):
           'area_number': msg[4],
           'feature_state': build_state_list(msg[5], FEAT_STATES),
           }
-    return d;
+    return d
 
 
 def cmd_temp(self,msg):

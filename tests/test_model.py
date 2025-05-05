@@ -1,4 +1,3 @@
-import pytest
 from concord232.model import Zone
 
 def test_zone_bypassed():

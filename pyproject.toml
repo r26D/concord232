@@ -6,3 +6,12 @@ build-backend = "setuptools.build_meta"
 dev-dependencies = [
     "pytest"
 ]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = [
+    ".venv",
+    "concord232.egg-info",
+    "__pycache__",
+]

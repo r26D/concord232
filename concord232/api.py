@@ -1,7 +1,7 @@
 import flask
 import json
 import logging
-import time;
+import time
 
 LOG = logging.getLogger('api')
 CONTROLLER = None
@@ -43,14 +43,14 @@ def index_panel():
             })
         return flask.Response(result,
                               mimetype='application/json')
-    except Exception as e:
+    except Exception:
         LOG.exception('Failed to index zones')
 
 @app.route('/zones')
 def index_zones():
     try:
         if not bool(CONTROLLER.zones):
-            CONTROLLER.request_zones();
+            CONTROLLER.request_zones()
             
         while not bool(CONTROLLER.zones):
             time.sleep(0.25)
@@ -59,7 +59,7 @@ def index_zones():
             'zones': [show_zone(zone) for zone in CONTROLLER.zones.values()]})
         return flask.Response(result,
                               mimetype='application/json')
-    except Exception as e:
+    except Exception:
         LOG.exception('Failed to index zones')
 
 
@@ -69,7 +69,7 @@ def index_zones():
 def index_partitions():
     try:
         if not bool(CONTROLLER.partitions):
-            CONTROLLER.request_partitions();
+            CONTROLLER.request_partitions()
          
         while not bool(CONTROLLER.partitions):
             time.sleep(0.25)
@@ -79,7 +79,7 @@ def index_partitions():
                            for partition in CONTROLLER.partitions.values()]})
         return flask.Response(result,
                               mimetype='application/json')
-    except Exception as e:
+    except Exception:
         LOG.exception('Failed to index partitions')
 
 

@@ -1,4 +1,3 @@
-import pytest
 from concord232.concord_helpers import ascii_hex_to_byte, total_secs
 
 def test_ascii_hex_to_byte():

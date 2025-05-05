@@ -1,4 +1,3 @@
-import pytest
 from concord232.concord_commands import KEYPRESS_CODES, bytes_to_num
 
 def test_keypress_codes():
