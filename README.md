@@ -173,35 +173,53 @@ uv pip install --system --dev
 
 You can also run tests in CI using GitHub Actions (see `.github/workflows/ci.yml`).
 
-## Automated Linting
+## Code Style, Linting, and Formatting
 
-This project uses [Ruff](https://docs.astral.sh/ruff/) for automated linting and code style enforcement. Ruff runs automatically on every push and pull request via GitHub Actions. You can also run it locally:
+This project uses [Ruff](https://docs.astral.sh/ruff/), [Black](https://black.readthedocs.io/), and [isort](https://pycqa.github.io/isort/) for code style, linting, and import sorting. These tools are enforced both locally and in CI.
 
-```sh
-uv pip install ruff
-ruff check .
-```
+### Running Locally
 
-See `.github/workflows/ci.yml` for the CI configuration.
-
-## Linting
-
-This project uses [ruff](https://docs.astral.sh/ruff/) for linting and code style enforcement.
-
-To check code style and lint your code, run:
+Install all tools:
 
 ```sh
-uv pip install ruff
-ruff .
+uv pip install ruff black isort
 ```
 
-You can also automatically fix some issues with:
+Check and fix code style:
 
 ```sh
 ruff check . --fix
+black .
+isort .
 ```
 
-The linter is configured in `pyproject.toml`:
+Or, to just check (without fixing):
+
+```sh
+ruff check .
+black --check .
+isort --check-only .
+```
+
+### Pre-commit Hooks
+
+To automatically run these tools before every commit, install pre-commit and set up the hooks:
+
+```sh
+uv pip install pre-commit
+pre-commit install
+pre-commit run --all-files
+```
+
+The configuration is in `.pre-commit-config.yaml`.
+
+### Continuous Integration (CI)
+
+All code style checks (Ruff, Black, isort) are run automatically in GitHub Actions CI on every push and pull request. See `.github/workflows/ci.yml` for details.
+
+### Configuration
+
+All tool configurations are in `pyproject.toml`:
 
 ```toml
 [tool.ruff]
@@ -212,9 +230,16 @@ exclude = [
     "concord232.egg-info",
     "__pycache__",
 ]
-```
 
-> **Note:** Linting is not currently run automatically in CI, so please run it locally before submitting changes.
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip = [".venv", "concord232.egg-info", "__pycache__"]
+```
 
 # Badges
 
