@@ -1,3 +1,5 @@
+# Codebase Improvements
+
 - [x] Improve README.md with setup, usage, and contribution instructions
 - [ ] Add or improve docstrings for all public modules, classes, and functions
 - [ ] Generate API documentation (e.g., with Sphinx or MkDocs)
@@ -21,3 +23,7 @@
 - [ ] Add or review LICENSE for appropriateness
 - [ ] Add CONTRIBUTING.md for external contributors
 - [ ] Maintain a CHANGELOG.md for tracking changes
+
+# Features
+
+- [ ] Enable switching keypad to a different partition

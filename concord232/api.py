@@ -1,3 +1,6 @@
+"""
+Flask API for the concord232 server. Provides endpoints for panel, zones, partitions, commands, version, equipment, and all_data.
+"""
 import flask
 import json
 import logging
@@ -9,6 +12,13 @@ app = flask.Flask('concord232')
 LOG.info("API Code Loaded")
 
 def show_zone(zone):
+    """
+    Convert a zone dictionary to a JSON-serializable dict for API response.
+    Args:
+        zone (dict): Zone data.
+    Returns:
+        dict: JSON-serializable zone info.
+    """
     return {
         'partition': zone['partition_number'],
         'area': zone['area_number'],
@@ -24,6 +34,13 @@ def show_zone(zone):
 
 
 def show_partition(partition):
+    """
+    Convert a partition dictionary to a JSON-serializable dict for API response.
+    Args:
+        partition (dict): Partition data.
+    Returns:
+        dict: JSON-serializable partition info.
+    """
     return {
         'number': partition['partition_number'],
         'area': partition['area_number'],
@@ -37,6 +54,11 @@ def show_partition(partition):
 
 @app.route('/panel')
 def index_panel():
+    """
+    API endpoint to get the panel state.
+    Returns:
+        flask.Response: JSON response with panel state.
+    """
     try:
         result = json.dumps({
             'panel': CONTROLLER.panel
@@ -48,6 +70,11 @@ def index_panel():
 
 @app.route('/zones')
 def index_zones():
+    """
+    API endpoint to get all zones.
+    Returns:
+        flask.Response: JSON response with all zones.
+    """
     try:
         if not bool(CONTROLLER.zones):
             CONTROLLER.request_zones()
@@ -67,6 +94,11 @@ def index_zones():
 
 @app.route('/partitions')
 def index_partitions():
+    """
+    API endpoint to get all partitions.
+    Returns:
+        flask.Response: JSON response with all partitions.
+    """
     try:
         if not bool(CONTROLLER.partitions):
             CONTROLLER.request_partitions()
@@ -85,6 +117,11 @@ def index_partitions():
 
 @app.route('/command')
 def command():
+    """
+    API endpoint to send commands (arm, disarm, keys) to the panel.
+    Returns:
+        flask.Response: Empty response.
+    """
     args = flask.request.args
     if args.get('cmd') == 'arm':
         option = args.get('option')
@@ -101,16 +138,31 @@ def command():
 
 @app.route('/version')
 def get_version():
+    """
+    API endpoint to get the API version.
+    Returns:
+        flask.Response: JSON response with version info.
+    """
     return flask.Response(json.dumps({'version': '1.1'}),
                           mimetype='application/json')
 
 @app.route('/equipment')
 def get_equipment():
+    """
+    API endpoint to request all equipment data from the panel.
+    Returns:
+        flask.Response: Empty response.
+    """
     CONTROLLER.request_all_equipment()
     return flask.Response()    
 
 
 @app.route('/all_data')
 def get_all_data():
+    """
+    API endpoint to request a dynamic data refresh from the panel.
+    Returns:
+        flask.Response: Empty response.
+    """
     CONTROLLER.request_dynamic_data_refresh()
     return flask.Response()    

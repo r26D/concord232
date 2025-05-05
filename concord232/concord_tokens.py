@@ -1,3 +1,6 @@
+"""
+Token dictionary and utilities for decoding Concord panel text tokens to human-readable strings.
+"""
 
 TOKENS = {
 0x0: '0',
@@ -226,6 +229,13 @@ TOKENS = {
 }
 
 def decode_text_tokens(tokens):
+    """
+    Convert a list of token codes to a human-readable string, handling special tokens like backspace and pseudo-space.
+    Args:
+        tokens (list): List of integer token codes.
+    Returns:
+        str: Decoded string.
+    """
     # Convert token codes to strings, adding appropriate spaces.
     s = ''
     n = len(tokens)
