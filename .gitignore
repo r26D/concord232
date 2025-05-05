@@ -3,3 +3,5 @@
 build/
 dist/
 concord232.egg-info/
+
+.idea/
