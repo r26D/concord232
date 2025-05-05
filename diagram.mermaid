@@ -1,0 +1,81 @@
+flowchart TB
+%% External Systems
+    HA["Home Assistant"]:::external
+    CI["GitHub Actions\n(.github/workflows)"]:::ci
+    PKG["Packaging\n(setup.py,\npyproject.toml)"]:::ci
+
+%% Client Process
+    subgraph "Client Side"
+        CLILib["Client Library Interface\n(concord232/client.py)"]:::runtime
+        CLI["CLI Script\n(concord232_client)"]:::runtime
+    end
+
+%% Server Process
+    subgraph "Server Side"
+        Entry["Server Entry Point\n(concord232/main.py)"]:::runtime
+        API["API Layer\n(concord232/api.py)"]:::runtime
+        SerialHandler["Serial Comm Handler\n(PySerial Wrapper)"]:::runtime
+        Notification["Notification Module\n(concord232/mail.py)"]:::runtime
+        SerialBridge["Serial-to-Network Bridge\n(ser2net)"]:::runtime
+    end
+
+%% Core Library
+    subgraph "Concord232 Core Library"
+        CoreClass["Concord Class\n(concord232/concord.py)"]:::library
+        Commands["Commands Logic\n(concord232/concord_commands.py)"]:::library
+        AlarmCodes["Alarm Codes\n(concord232/concord_alarm_codes.py)"]:::library
+        Helpers["Helpers\n(concord232/concord_helpers.py)"]:::library
+        Tokens["Tokens\n(concord232/concord_tokens.py)"]:::library
+        Models["Domain Models\n(concord232/model.py)"]:::library
+    end
+
+%% Hardware Layer
+    subgraph "Hardware Layer"
+        Adapter["Serial Adapter\n(USB↔RS232)"]:::hardware
+        Panel["GE Concord 4 Panel"]:::hardware
+    end
+
+%% Connections
+    CLI -->|"uses"| CLILib
+    HA -->|"calls CLI Lib"| CLILib
+    CLILib -->|"TCP/HTTP Requests"| API
+    API -->|"invokes"| CoreClass
+    API -->|"invokes"| Commands
+    API -->|"invokes"| AlarmCodes
+    API -->|"invokes"| Helpers
+    API -->|"invokes"| Tokens
+    API -->|"invokes"| Models
+    API -->|"sends email via"| Notification
+    CoreClass -->|"reads/writes"| SerialHandler
+    SerialHandler -->|"serial bus"| Adapter
+    Adapter -->|"RS232"| Panel
+    Panel -->|"status"| Adapter
+    CI -.-> API
+    CI -.-> CLI
+    PKG -.-> CoreClass
+
+%% Click Events
+    click CoreClass "https://github.com/jasoncarter80/concord232/blob/master/concord232/concord.py"
+    click Commands "https://github.com/jasoncarter80/concord232/blob/master/concord232/concord_commands.py"
+    click AlarmCodes "https://github.com/jasoncarter80/concord232/blob/master/concord232/concord_alarm_codes.py"
+    click Helpers "https://github.com/jasoncarter80/concord232/blob/master/concord232/concord_helpers.py"
+    click Tokens "https://github.com/jasoncarter80/concord232/blob/master/concord232/concord_tokens.py"
+    click Models "https://github.com/jasoncarter80/concord232/blob/master/concord232/model.py"
+    click Notification "https://github.com/jasoncarter80/concord232/blob/master/concord232/mail.py"
+    click API "https://github.com/jasoncarter80/concord232/blob/master/concord232/api.py"
+    click Entry "https://github.com/jasoncarter80/concord232/blob/master/concord232/main.py"
+    click SerialBridge "https://github.com/jasoncarter80/concord232/blob/master/concord232/exclude/ser2net.conf"
+    click SerialBridge "https://github.com/jasoncarter80/concord232/blob/master/concord232/exclude/ser2net.sh"
+    click CLILib "https://github.com/jasoncarter80/concord232/blob/master/concord232/client.py"
+    click CLI "https://github.com/jasoncarter80/concord232/tree/master/concord232_client"
+    click ServerCLI "https://github.com/jasoncarter80/concord232/tree/master/concord232_server"
+    click CI "https://github.com/jasoncarter80/concord232/blob/master/.github/workflows/workflow.yml"
+    click PKG "https://github.com/jasoncarter80/concord232/blob/master/setup.py"
+    click PKG "https://github.com/jasoncarter80/concord232/blob/master/pyproject.toml"
+
+%% Styles
+    classDef library fill:#cce5ff,stroke:#004085,color:#004085;
+    classDef runtime fill:#d4edda,stroke:#155724,color:#155724;
+    classDef hardware fill:#e2e3e5,stroke:#6c757d,color:#6c757d;
+    classDef external fill:#fff3cd,stroke:#856404,color:#856404;
+    classDef ci fill:#f8d7da,stroke:#721c24,color:#721c24;
