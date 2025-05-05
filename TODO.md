@@ -1,8 +1,8 @@
 # Codebase Improvements
 
 - [x] Improve README.md with setup, usage, and contribution instructions
-- [ ] Add or improve docstrings for all public modules, classes, and functions
-- [ ] Generate API documentation (e.g., with Sphinx or MkDocs)
+- [x] Add or improve docstrings for all public modules, classes, and functions
+- [x] Generate API documentation (MkDocs)
 - [ ] Increase test coverage and use coverage tools (e.g., pytest-cov)
 - [ ] Organize tests logically by feature/module
 - [ ] Ensure automated testing in CI workflows
