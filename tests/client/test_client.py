@@ -57,4 +57,38 @@ def test_get_version(mock_session):
     mock_instance.get.return_value.status_code = 200
     mock_instance.get.return_value.json.return_value = {'version': '1.2'}
     client = Client('http://fake')
-    assert client.get_version() == '1.2' 
+    assert client.get_version() == '1.2'
+
+@patch('concord232.client.requests.Session')
+def test_arm_partition(mock_session):
+    mock_instance = mock_session.return_value
+    mock_instance.get.return_value.status_code = 200
+    client = Client('http://fake')
+    # Simulate arming partition 2
+    result = client.send_keys('\x02', group=True, partition=2)
+    assert result is True
+    # Check that partition param was sent
+    args, kwargs = mock_instance.get.call_args
+    assert kwargs['params']['partition'] == 2
+
+@patch('concord232.client.requests.Session')
+def test_disarm_partition(mock_session):
+    mock_instance = mock_session.return_value
+    mock_instance.get.return_value.status_code = 200
+    client = Client('http://fake')
+    # Simulate disarming partition 3 with pin '1234'
+    result = client.send_keys('1234', group=True, partition=3)
+    assert result is True
+    args, kwargs = mock_instance.get.call_args
+    assert kwargs['params']['partition'] == 3
+
+@patch('concord232.client.requests.Session')
+def test_send_keys_partition(mock_session):
+    mock_instance = mock_session.return_value
+    mock_instance.get.return_value.status_code = 200
+    client = Client('http://fake')
+    # Simulate sending keys to partition 4
+    result = client.send_keys('99*', group=False, partition=4)
+    assert result is True
+    args, kwargs = mock_instance.get.call_args
+    assert kwargs['params']['partition'] == 4 

@@ -183,6 +183,41 @@ curl "http://<your_server_address>:<port>/command?cmd=keys&keys=*&group=3"
 
 Replace `<your_server_address>` and `<port>` with your server's address and port.
 
+## Partition Support
+
+You can target specific partitions for arming, disarming, and sending keys using the `--partition` argument in the CLI, or the `partition` parameter in the HTTP API.
+
+### CLI Examples
+
+Arm partition 2 to stay:
+
+```
+concord232_client arm-stay --partition 2
+```
+
+Disarm partition 3 with master PIN:
+
+```
+concord232_client disarm --master 1234 --partition 3
+```
+
+Send keys to partition 4:
+
+```
+concord232_client keys --keys 1234* --partition 4
+```
+
+If `--partition` is not specified, partition 1 is used by default.
+
+### HTTP API Partition Parameter
+
+For the `/command` endpoint, you can specify the `partition` parameter for `cmd=keys` (and for custom arming/disarming via keypresses):
+
+- **Send keys to a specific partition:**
+  - `/command?cmd=keys&keys=<keys>&group=<group>&partition=<partition_number>`
+  - Example: To send a `*` key to partition 3:
+    `/command?cmd=keys&keys=*&group=True&partition=3`
+
 ## Testing
 
 This project uses [pytest](https://pytest.org/) for testing and [uv](https://github.com/astral-sh/uv) as the Python package manager.

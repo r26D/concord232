@@ -27,3 +27,11 @@
 # Features
 
 - [ ] Enable switching keypad to a different partition
+- [x] Add partition support to the client
+- [ ] Add support for multiple panels on the same server
+- [ ] Add support for virtual keypads
+- [ ] Add support for multiple users
+- [ ] Add support for zones
+- [ ] Add support for events
+- [ ] Add support for logging
+- [ ] Add support for reports
