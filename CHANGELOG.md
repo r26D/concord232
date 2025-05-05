@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a system diagram to the documentation.
 - Added CI workflow to ensure code quality and test coverage.
 - Added type hints to all major source files and enabled mypy static type checking. The codebase is now fully type-annotated and mypy clean.
+- Integrated gitleaks as a pre-commit hook to automatically scan for secrets and credentials in staged changes.
 
 ## [0.1.0] - YYYY-MM-DD
 

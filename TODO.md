@@ -4,11 +4,9 @@
 
 - [ ] Pin dependency versions for reproducibility
 - [ ] Document virtual environment setup
-- [ ] Ensure no secrets or credentials are in the repo
+- [x] Ensure no secrets or credentials are in the repo
 - [ ] Regularly update dependencies and check for vulnerabilities
-- [x] Use structured logging instead of print statements
 - [ ] Automate versioning and releases
-- [ ] Add build, test, and coverage badges to README
 - [ ] Add or review LICENSE for appropriateness
 - [ ] Add CONTRIBUTING.md for external contributors
 
