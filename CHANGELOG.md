@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.9] - 2026-02-27
+
+- Fix: add `__init__.py` to `concord232/server/` and `concord232/client/` and use `find_packages()` in `setup.py` so sub-packages are installed.
+
 ## [0.15.8] - 2026-02-27
 
 - Fix: run.sh bypasses the pip entry point script and calls `concord232.main` directly, eliminating the `ModuleNotFoundError: No module named 'concord232_server'` crash.

@@ -1,3 +1,8 @@
+## 0.15.9
+
+- Fix: add `__init__.py` to `concord232/server/` and `concord232/client/` so sub-packages are installed correctly (`No module named 'concord232.server'` resolved).
+- Fix: `setup.py` now uses `find_packages()` to include all sub-packages.
+
 ## 0.15.8
 
 - Fix: run.sh now invokes `python3 -c "from concord232.main import main; main()"` directly, bypassing the broken pip-generated entry point script entirely.

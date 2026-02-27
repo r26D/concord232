@@ -1,15 +1,15 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 setup(
     name="concord232",
-    version="0.15.8",
+    version="0.15.9",
     description="GE Concord 4 RS232 Serial Interface Library and Server",
     author="Jason Carter",
     author_email="jason@jason-carter.net",
     url="http://github.com/JasonCarter80/concord232",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    packages=["concord232"],
+    packages=find_packages(exclude=["tests*", "docs*", "scripts*"]),
     install_requires=["requests", "stevedore", "prettytable", "pyserial", "flask"],
     extras_require={
         "dev": ["pytest"],
