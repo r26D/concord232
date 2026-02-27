@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.3] - 2025-02-27
+
+- Fixed `ModuleNotFoundError: No module named 'concord232_server'` in the Home Assistant add-on by correcting the `concord232_server` entry point in pyproject.toml to use `concord232.main:main` instead of the non-existent `concord232_server` module.
+- Add-on: expose port 5008 in addition to 5007 so the API is reachable when the add-on is configured to use port 5008.
+- Documentation: added "Calling the concord232 API from HA (e.g. rest_command)" to the migration guide (use 127.0.0.1 and the correct port to avoid timeouts when the app runs on the same host as Home Assistant).
+
+## Previous changes (0.15.2 and earlier)
+
 - Migrated all CLI and codebase output from print statements to structured logging using the logging module.
 - Updated CLI tests to check stderr for log output instead of stdout, ensuring compatibility with structured logging.
 - Implemented test mode support in the CLI and refactored client import logic.

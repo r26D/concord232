@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="concord232",
-    version="0.15.2",
+    version="0.15.3",
     description="GE Concord 4 RS232 Serial Interface Library and Server",
     author="Jason Carter",
     author_email="jason@jason-carter.net",
@@ -14,7 +14,7 @@ setup(
     extras_require={
         "dev": ["pytest"],
     },
-    scripts=["concord232_server", "concord232_client"],
+    scripts=["concord232_client"],
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3",
