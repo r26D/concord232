@@ -1,5 +1,5 @@
 # Add this repository in Home Assistant:
-# Settings → Add-ons → Add-on store → ⋮ → Repositories
+# Settings → Apps → ⋮ → Repositories (in older versions: Settings → Add-ons → Add-on store → ⋮ → Repositories)
 # URL: https://github.com/r26d/concord232
 name: Concord232 Add-on Repository
 url: https://github.com/r26d/concord232
