@@ -5,3 +5,4 @@ dist/
 concord232.egg-info/
 
 .idea/
+.DS_Store
