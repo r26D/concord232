@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.4] - 2025-02-27
+
+- Add-on: improved DOCS.md (configuration table formatting, Advantech EKI-1511L-A default port 5500). Expose only port 5007; default serial example set to rfc2217.
+
 ## [0.15.3] - 2025-02-27
 
 - Fixed `ModuleNotFoundError: No module named 'concord232_server'` in the Home Assistant add-on by correcting the `concord232_server` entry point in pyproject.toml to use `concord232.main:main` instead of the non-existent `concord232_server` module.

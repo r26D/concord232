@@ -4,11 +4,11 @@ Runs the concord232 server on your Home Assistant host (e.g. Yellow) so the [Con
 
 ## Configuration
 
-| Option     | Required | Description |
-|------------|----------|-------------|
-| **serial** | Yes | Serial device or URL — see _Serial connection_ below. |
-| **port**   | No  | HTTP API listen port (default: `5007`). |
-| **log**    | No  | Path to a log file inside the container. Leave empty to log to the add-on log only. |
+| Option     | Required | Description                                                                         |
+| ---------- | -------- | ----------------------------------------------------------------------------------- |
+| **serial** | Yes      | Serial device or URL — see _Serial connection_ below.                               |
+| **port**   | No       | HTTP API listen port (default: `5007`).                                             |
+| **log**    | No       | Path to a log file inside the container. Leave empty to log to the add-on log only. |
 
 ## Serial connection
 
@@ -25,7 +25,8 @@ socket://192.168.1.100:4660
 Replace `192.168.1.100` with the device's IP address.
 
 **Port:** check the device's web UI under the serial port → TCP Server settings. Common defaults:
-- **Advantech EKI-1511L-A**: `4660`
+
+- **Advantech EKI-1511L-A**: `5500`
 - **MOXA NPort**: `4001`
 - **Digi**: `2101`
 

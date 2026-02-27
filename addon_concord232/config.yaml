@@ -1,7 +1,7 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: Concord232
 description: GE Concord 4 alarm panel RS232 server for Home Assistant. Exposes an HTTP API so the Concord Alarm integration can control your panel. Runs automatically on boot.
-version: "0.15.3"
+version: "0.15.4"
 slug: addon_concord232
 url: https://github.com/r26D/concord232/tree/main/addon_concord232
 arch:
@@ -12,12 +12,10 @@ arch:
 init: false
 ports:
   5007/tcp: 5007
-  5008/tcp: 5008
 ports_description:
   5007/tcp: Concord232 HTTP API
-  5008/tcp: Concord232 HTTP API (alternate port)
 options:
-  serial: socket://192.168.3.89:5500
+  serial: rfc2217://192.168.3.89:5500
   port: 5007
   log: ""
 schema:
