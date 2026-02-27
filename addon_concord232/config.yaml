@@ -21,4 +21,4 @@ options:
 schema:
   serial: str
   port: int
-  log: str
+  log: str?
