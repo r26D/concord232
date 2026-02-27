@@ -1,5 +1,4 @@
-GE Concord 4 RS232 Automation Module Interface Library and Server
-==================================================================
+# GE Concord 4 RS232 Automation Module Interface Library and Server
 
 This is a tool to let you interact with your GE Concord 4 alarm panel via
 the RS232 Automation module.
@@ -46,10 +45,10 @@ pip show concord232
 
 Check that the `Location:` field points to your local directory.
 
-The server must be run on a machine with connectivity to the panel, to get started, you must only supply the serial port.  In this case I use a USB to Serial adapter
+The server must be run on a machine with connectivity to the panel, to get started, you must only supply the serial port. In this case I use a USB to Serial adapter
 
 ```
-concord232_server --serial /dev/ttyUSB0 
+concord232_server --serial /dev/ttyUSB0
 ```
 
 You can now also use a configuration file (`config.ini` by default) to specify server settings. Command-line arguments will override config file values if both are provided.
@@ -67,7 +66,7 @@ listen = 0.0.0.0
 # Listen port for the API server (default: 5007)
 port = 5007
 # Path to log file (default: none; logs to stdout if not set)
-log = 
+log =
 ```
 
 You can then start the server with just:
@@ -121,8 +120,8 @@ concord232_client disarm --master 1234
 ## Arming with options
 
 Both stay (level 2) and away (level 3) alarms can take one of two
-options: silent arming, or instant arming.  Silent arming will not
-beep while the alarm is setting.  Instant arming has no delay.
+options: silent arming, or instant arming. Silent arming will not
+beep while the alarm is setting. Instant arming has no delay.
 Clearly, this should only be used with away arming if you are already
 outside.
 
@@ -142,22 +141,36 @@ concord232_client arm-away-silent
 
 ## Home Assistant
 
-Home Assistant will automatically download and install the pip3 library, but it only utilizes the Client to connect to the server.  I used the instructions [found here](http://www.raspberrypi-spy.co.uk/2015/10/how-to-autorun-a-python-script-on-boot-using-systemd/) for setting up the server to run automatically at boot time.
+Home Assistant will automatically download and install the pip3 library, but it only utilizes the Client to connect to the server.
+
+### Running the server on Home Assistant (e.g. Yellow)
+
+To run the concord232 server **on your Home Assistant host** (e.g. Home Assistant Yellow) so it starts automatically with HA:
+
+1. Add this repository as an add-on source: **Settings → Add-ons → Add-on store → ⋮ → Repositories** → add `https://github.com/r26d/concord232`.
+2. Install the **Concord232** add-on, set the **serial** option (e.g. `/dev/ttyUSB0` for a USB adapter, or `rfc2217://host:port` for network serial), then enable **Start on boot** and start the add-on.
+3. In the [Concord Alarm](https://www.home-assistant.io/integrations/concord/) integration, use host `localhost` and port `5007` (or the port you configured).
+
+See **[Migrating from Mac Mini to Home Assistant Yellow](docs-site/docs/migration-mac-mini-to-ha-yellow.md)** for a full step-by-step migration and troubleshooting.
+
+### Running the server on a separate machine (e.g. Raspberry Pi, Mac)
+
+For a server on another machine (Raspberry Pi, Mac Mini, etc.), you can use a [systemd service](http://www.raspberrypi-spy.co.uk/2015/10/how-to-autorun-a-python-script-on-boot-using-systemd/) to run the server at boot. Point the Concord Alarm integration in Home Assistant at that machine’s host and port (e.g. `5007`).
 
 ## HTTP API
 
 The concord232 server also exposes a simple HTTP API for interacting with your panel.  
 Below are the available endpoints and their usage:
 
-| Endpoint         | Method | Description/Commands                                                                                 |
-|------------------|--------|------------------------------------------------------------------------------------------------------|
-| `/panel`         | GET    | Get panel state                                                                                      |
-| `/zones`         | GET    | Get all zones                                                                                        |
-| `/partitions`    | GET    | Get all partitions                                                                                   |
-| `/command`       | GET    | `cmd=arm`, `cmd=disarm`, `cmd=keys` (see below for parameters)                                      |
-| `/version`       | GET    | Get API version                                                                                      |
-| `/equipment`     | GET    | Request all equipment data                                                                           |
-| `/all_data`      | GET    | Request dynamic data refresh                                                                         |
+| Endpoint      | Method | Description/Commands                                           |
+| ------------- | ------ | -------------------------------------------------------------- |
+| `/panel`      | GET    | Get panel state                                                |
+| `/zones`      | GET    | Get all zones                                                  |
+| `/partitions` | GET    | Get all partitions                                             |
+| `/command`    | GET    | `cmd=arm`, `cmd=disarm`, `cmd=keys` (see below for parameters) |
+| `/version`    | GET    | Get API version                                                |
+| `/equipment`  | GET    | Request all equipment data                                     |
+| `/all_data`   | GET    | Request dynamic data refresh                                   |
 
 ### `/command` endpoint
 
@@ -168,14 +181,14 @@ Below are the available endpoints and their usage:
 - **Disarm the system:**
   - `/command?cmd=disarm&master_pin=<PIN>`
 
-- **Send keys (e.g., *, #, digits):**
+- **Send keys (e.g., \*, #, digits):**
   - `/command?cmd=keys&keys=<keys>&group=<group>`
   - Example: To send a `*` key to partition 3:  
     `/command?cmd=keys&keys=*&group=3`
 
 ### Example usage
 
-To send a * key to partition 3 using curl:
+To send a \* key to partition 3 using curl:
 
 ```sh
 curl "http://<your_server_address>:<port>/command?cmd=keys&keys=*&group=3"
@@ -358,6 +371,8 @@ skip = [".venv", "concord232.egg-info", "__pycache__"]
 - `concord232/` - Core library code
 - `concord232_client` - Command-line client
 - `concord232_server` - Server exposing HTTP API
+- `addon-concord232/` - Home Assistant add-on (runs the server on HA OS, e.g. Yellow)
+- `docs-site/docs/` - Documentation (including [migration guide](docs-site/docs/migration-mac-mini-to-ha-yellow.md) to HA Yellow)
 - `tests/` - Test suite
 - `README.md` - Project documentation
 - `pyproject.toml`, `setup.py` - Packaging and configuration
@@ -378,6 +393,6 @@ This project is licensed under the terms of the LICENSE file in this repository.
 
 # Contact & Support
 
-For questions, issues, or feature requests, please open an issue on GitHub or contact the maintainer at <your-email@example.com>.
+For questions, issues, or feature requests, please open an issue on GitHub or contact the maintainer at <brett@r26d.com>.
 
 ---
