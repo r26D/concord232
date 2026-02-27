@@ -14,4 +14,4 @@ fi
 EXTRA=""
 [ -n "$LOG" ] && EXTRA="$EXTRA --log $LOG"
 
-exec concord232_server --serial "$SERIAL" --listen 0.0.0.0 --port "${PORT}" $EXTRA
+exec python3 -c "from concord232.main import main; main()" --serial "$SERIAL" --listen 0.0.0.0 --port "${PORT}" $EXTRA

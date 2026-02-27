@@ -1,3 +1,7 @@
+## 0.15.8
+
+- Fix: run.sh now invokes `python3 -c "from concord232.main import main; main()"` directly, bypassing the broken pip-generated entry point script entirely.
+
 ## 0.15.7
 
 - Fix: Flask API now stays up even if the serial connection fails (non-daemon thread, serial errors caught and logged).

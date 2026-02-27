@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.8] - 2026-02-27
+
+- Fix: run.sh bypasses the pip entry point script and calls `concord232.main` directly, eliminating the `ModuleNotFoundError: No module named 'concord232_server'` crash.
+
 ## [0.15.7] - 2026-02-27
 
 - Fix: Flask non-daemon thread + serial exception handling so API stays up even when the serial connection fails.
