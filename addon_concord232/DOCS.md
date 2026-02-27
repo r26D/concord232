@@ -14,15 +14,20 @@ Runs the concord232 server on your Home Assistant host (e.g. Yellow) so the [Con
 
 Set the **serial** option to the path or URL that matches how the RS232 adapter is connected.
 
-### Dedicated network serial server on the LAN (e.g. USR-TCP232, MOXA NPort, Digi)
+### Dedicated network serial server on the LAN (e.g. Advantech EKI-1511L, MOXA NPort, Digi)
 
-Most hardware serial servers expose a plain TCP socket (sometimes called "TCP Server" or "Virtual COM" mode):
+Hardware serial servers expose a plain TCP socket in **TCP Server** mode. This is the correct mode — **not** VCOM/Virtual COM, which requires a proprietary Windows driver.
 
 ```
-socket://192.168.1.100:4999
+socket://192.168.1.100:4660
 ```
 
-Replace `192.168.1.100` with the device's IP and `4999` with its configured TCP port.
+Replace `192.168.1.100` with the device's IP address.
+
+**Port:** check the device's web UI under the serial port → TCP Server settings. Common defaults:
+- **Advantech EKI-1511L-A**: `4660`
+- **MOXA NPort**: `4001`
+- **Digi**: `2101`
 
 ### ser2net in RFC2217 mode (Raspberry Pi, another Linux host)
 
