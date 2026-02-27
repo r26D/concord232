@@ -106,21 +106,24 @@ For more information, see: https://github.com/JasonCarter80/concord232
             "The --serial argument or a [server] serial entry in the config file is required. Example: --serial /dev/ttyUSB0"
         )
 
-    # Start Flask first so the API responds (e.g. /version) even while the
-    # serial connection is being established or retried.
+    # Start Flask first in a non-daemon thread so the API is always reachable
+    # on port 5007 even if the serial connection fails or takes time.
     flask_thread = threading.Thread(
         target=lambda: api.app.run(debug=False, host=listen, port=port, threaded=True),
-        daemon=True,
+        daemon=False,
+        name="flask",
     )
     flask_thread.start()
     LOG.info("API server started on %s:%s", listen, port)
 
-    ctrl = concord.AlarmPanelInterface(serial, 0.25, LOG)
-    api.CONTROLLER = ctrl
-
-    t = threading.Thread(target=ctrl.message_loop)
-    t.daemon = True
-    t.start()
-
-    # Keep the main thread alive as long as the serial loop is running.
-    t.join()
+    try:
+        ctrl = concord.AlarmPanelInterface(serial, 0.25, LOG)
+        api.CONTROLLER = ctrl
+        t = threading.Thread(target=ctrl.message_loop, daemon=True, name="serial-loop")
+        t.start()
+        t.join()
+    except Exception:
+        LOG.exception(
+            "Serial connection failed; API remains available but panel control is offline"
+        )
+        flask_thread.join()

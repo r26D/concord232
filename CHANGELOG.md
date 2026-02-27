@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.7] - 2026-02-27
+
+- Fix: Flask non-daemon thread + serial exception handling so API stays up even when the serial connection fails.
+
 ## [0.15.6] - 2026-02-27
 
 - Fix: start Flask API before opening serial port so port 5007 is always reachable even if the serial connection is slow or fails.

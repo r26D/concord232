@@ -1,3 +1,7 @@
+## 0.15.7
+
+- Fix: Flask API now stays up even if the serial connection fails (non-daemon thread, serial errors caught and logged).
+
 ## 0.15.6
 
 - Fix: start Flask API before opening serial port so port 5007 is always reachable even if the serial connection is slow or fails.

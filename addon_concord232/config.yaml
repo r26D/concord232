@@ -1,7 +1,7 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: Concord232
 description: GE Concord 4 alarm panel RS232 server for Home Assistant. Exposes an HTTP API so the Concord Alarm integration can control your panel. Runs automatically on boot.
-version: "0.15.6"
+version: "0.15.7"
 slug: addon_concord232
 url: https://github.com/r26D/concord232/tree/main/addon_concord232
 arch:
