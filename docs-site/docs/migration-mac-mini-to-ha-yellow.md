@@ -70,6 +70,31 @@ The Concord Alarm integration in Home Assistant must talk to the concord232 serv
 
 Reconfigure or add the **Concord Alarm** integration (Settings → Devices & services → Add integration → “Concord Alarm”) with that host and port.
 
+### Calling the concord232 API from HA (e.g. `rest_command`)
+
+If you use **rest_command** or other automations to hit the concord232 HTTP API (e.g. send keys to a partition), use the following so requests don’t time out:
+
+- **When the Concord232 app runs on the same host as Home Assistant** (e.g. on the Yellow):
+  - Use **host** `127.0.0.1` (or `localhost`), not the Yellow’s LAN IP. Using the host IP from inside HA can cause timeouts or routing issues.
+  - Use the **same port** as the app’s configuration (default **5007**). The add-on only publishes that one port; if you set the app to port 5008 but your requests use 5007 (or the other way around), the connection will fail or time out.
+
+Example for buttons calling the keys API on the same host:
+
+```yaml
+rest_command:
+  send_asterisk_to_partition_1:
+    url: "http://127.0.0.1:5007/command?cmd=keys&keys=*&partition=1"
+    method: GET
+  send_asterisk_to_partition_2:
+    url: "http://127.0.0.1:5007/command?cmd=keys&keys=*&partition=2"
+    method: GET
+  send_asterisk_to_partition_3:
+    url: "http://127.0.0.1:5007/command?cmd=keys&keys=*&partition=3"
+    method: GET
+```
+
+If the concord232 server runs on a **different machine** (e.g. a Pi), use that machine’s IP and the port it’s listening on (e.g. `http://192.168.3.89:5007/...`), and ensure the app is configured to listen on `0.0.0.0` (the add-on does this by default).
+
 ## Step 6: Decommission the Mac Mini server
 
 Once the app is running and the Concord integration works from HA:

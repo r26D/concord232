@@ -12,8 +12,10 @@ arch:
 init: false
 ports:
   5007/tcp: 5007
+  5008/tcp: 5008
 ports_description:
   5007/tcp: Concord232 HTTP API
+  5008/tcp: Concord232 HTTP API (alternate port)
 options:
   serial: socket://192.168.3.89:5500
   port: 5007
