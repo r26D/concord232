@@ -20,7 +20,7 @@ This guide covers moving the concord232 server from a Mac Mini to a **Home Assis
 2. Open the **⋮** (three dots) menu → **Repositories**.
 3. Add this repository:
    - **Repository URL:**  
-     `https://github.com/r26d/concord232`  
+     `https://github.com/r26D/concord232`  
      (or your fork: `https://github.com/YOUR_USERNAME/concord232`)
 4. Click **Add**, then **Close**.
 
@@ -79,9 +79,27 @@ Once the app is running and the Concord integration works from HA:
 
 ## Troubleshooting
 
+### App doesn’t appear in the store
+
+Home Assistant discovers apps from the repository URL you add. Use this checklist:
+
+1. **Repository URL** — Use the exact repo that contains the app:
+   - Official: `https://github.com/r26D/concord232`
+   - Your fork: `https://github.com/YOUR_USERNAME/concord232`  
+   The repo must have `repository.yaml` at the root and an `addon_concord232/` folder (see [HA example repository](https://github.com/home-assistant/addons-example)).
+
+2. **Add the repo in HA** — **Settings → Apps → ⋮ → Repositories** → paste the URL → **Add** → **Close**.
+
+3. **Refresh the store** — **⋮ → Check for updates** (or reload the Apps page). The app may appear under a “Local” or repository-specific section.
+
+4. **Default branch** — The Supervisor reads the repo’s default branch (usually `main`). Ensure `addon_concord232/` and `repository.yaml` are on that branch and pushed.
+
+5. **Folder name = slug** — The add-on directory must match the `slug` in `addon_concord232/config.yaml` (`addon_concord232`). Slugs use underscores only ([HA requirement](https://github.com/home-assistant/core/issues/99788)).
+
+If it still doesn’t appear: remove the repository (⋮ → Repositories → remove it), wait a moment, add it again with the correct URL, then **Check for updates**.
+
 | Issue | What to check |
 |-------|----------------|
-| **App doesn’t appear in the store** | The app must be in a **top-level** folder of the repo (`addon_concord232/`). Remove the repository (⋮ → Repositories → remove it), then add it again. Wait a minute and refresh. Ensure you’re using the repo URL that contains `addon_concord232/` and `repository.yaml` at the root. |
 | **No Install button** | The add-on folder name must match the slug (`addon_concord232`). Remove the repo, pull the latest changes, then re-add the repo and refresh. |
 | App won’t start | **Log** tab: missing `serial` or wrong device/URL; port in use. |
 | “Serial port” errors | Correct **serial** path (`/dev/ttyUSB0` etc.) or RFC2217 URL; adapter plugged in and not used by another app. |

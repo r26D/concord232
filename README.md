@@ -147,7 +147,7 @@ Home Assistant will automatically download and install the pip3 library, but it 
 
 To run the concord232 server **on your Home Assistant host** (e.g. Home Assistant Yellow) so it starts automatically with HA:
 
-1. Add this repository as an app source: **Settings → Apps** → **⋮** (three dots) → **Repositories** → add `https://github.com/r26d/concord232`. (In older HA versions the menu may still be **Settings → Add-ons → Add-on store**.)
+1. Add this repository as an app source: **Settings → Apps** → **⋮** (three dots) → **Repositories** → add `https://github.com/r26D/concord232`. (In older HA versions the menu may still be **Settings → Add-ons → Add-on store**.)
 2. Install the **Concord232** app, set the **serial** option (e.g. `/dev/ttyUSB0` for a USB adapter, or `rfc2217://host:port` for network serial), then enable **Start on boot** and start the app.
 3. In the [Concord Alarm](https://www.home-assistant.io/integrations/concord/) integration, use host `localhost` and port `5007` (or the port you configured).
 
@@ -335,7 +335,7 @@ skip = [".venv", "concord232.egg-info", "__pycache__"]
 
 # Badges
 
-[![CI](https://github.com/r26d/concord232/actions/workflows/ci.yml/badge.svg)](https://github.com/r26d/concord232/actions/workflows/ci.yml)
+[![CI](https://github.com/r26D/concord232/actions/workflows/ci.yml/badge.svg)](https://github.com/r26D/concord232/actions/workflows/ci.yml)
 [![Coverage Status](https://img.shields.io/badge/coverage-27%25-yellow.svg)](coverage.xml)
 
 # Features
