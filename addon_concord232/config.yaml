@@ -15,7 +15,7 @@ ports:
 ports_description:
   5007/tcp: Concord232 HTTP API
 options:
-  serial: rfc2217://192.168.3.89:5500
+  serial: socket://192.168.1.100:4999
   port: 5007
   log: ""
 schema:

@@ -4,17 +4,48 @@ Runs the concord232 server on your Home Assistant host (e.g. Yellow) so the [Con
 
 ## Configuration
 
-| Option  | Required | Description |
-|---------|----------|-------------|
-| **serial** | Yes | Serial device or URL. Use `/dev/ttyUSB0` (or similar) for a USB–serial adapter plugged into the host, or `rfc2217://host:port` for a network serial server (e.g. ser2net). |
-| **port**   | No  | HTTP API port (default: 5007). |
-| **log**    | No  | Path to log file inside the container. Leave empty to log to stdout only. |
+| Option     | Required | Description |
+|------------|----------|-------------|
+| **serial** | Yes | Serial device or URL — see _Serial connection_ below. |
+| **port**   | No  | HTTP API listen port (default: `5007`). |
+| **log**    | No  | Path to a log file inside the container. Leave empty to log to the add-on log only. |
 
 ## Serial connection
 
-- **USB on the Yellow:** Use a USB–RS232 adapter and set `serial` to the device path (e.g. `/dev/ttyUSB0`). The exact name may vary; check **Settings → System → Hardware** or run `ls /dev/tty*` via the Terminal & SSH app.
-- **Network serial (RFC2217):** If the panel is connected to another device (e.g. Raspberry Pi) running ser2net or similar, set `serial` to `rfc2217://<host>:<port>`.
+Set the **serial** option to the path or URL that matches how the RS232 adapter is connected.
+
+### Dedicated network serial server on the LAN (e.g. USR-TCP232, MOXA NPort, Digi)
+
+Most hardware serial servers expose a plain TCP socket (sometimes called "TCP Server" or "Virtual COM" mode):
+
+```
+socket://192.168.1.100:4999
+```
+
+Replace `192.168.1.100` with the device's IP and `4999` with its configured TCP port.
+
+### ser2net in RFC2217 mode (Raspberry Pi, another Linux host)
+
+If you have ser2net running on another machine in `telnet` mode (which enables RFC2217 Telnet option negotiation):
+
+```
+rfc2217://192.168.1.100:5500
+```
+
+> **Important:** ser2net must be configured with `telnet` mode (not `raw`) for RFC2217 to work.
+> Example ser2net entry: `5500:telnet:0:/dev/ttyUSB0:9600`
+
+### USB adapter plugged directly into the Yellow
+
+Find the device path using the Terminal & SSH app (`ls /dev/tty*` before and after plugging in):
+
+```
+/dev/ttyUSB0
+```
 
 ## Home Assistant integration
 
-After the app is running, add the **Concord Alarm** integration in Home Assistant and set the host to the Yellow’s IP (or `localhost` / `127.0.0.1` if the integration runs on the same host) and port to the value of the app **port** option (default 5007).
+After the app is running, configure the **Concord Alarm** integration in Home Assistant:
+
+- **Host:** `localhost` (if the integration is on the same HA instance as this add-on)
+- **Port:** the value of the **port** option (default `5007`)
