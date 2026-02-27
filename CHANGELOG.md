@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.5] - 2026-02-27
+
+- Fix: correct `concord232_server` entry point (`concord232.main:main`) so the server starts inside the add-on container.
+
 ## [0.15.4] - 2025-02-27
 
 - Add-on: improved DOCS.md (configuration table formatting, Advantech EKI-1511L-A default port 5500). Expose only port 5007; default serial example set to rfc2217.
