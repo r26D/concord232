@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.6] - 2026-02-27
+
+- Fix: start Flask API before opening serial port so port 5007 is always reachable even if the serial connection is slow or fails.
+
 ## [0.15.5] - 2026-02-27
 
 - Fix: correct `concord232_server` entry point (`concord232.main:main`) so the server starts inside the add-on container.

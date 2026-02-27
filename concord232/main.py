@@ -106,6 +106,15 @@ For more information, see: https://github.com/JasonCarter80/concord232
             "The --serial argument or a [server] serial entry in the config file is required. Example: --serial /dev/ttyUSB0"
         )
 
+    # Start Flask first so the API responds (e.g. /version) even while the
+    # serial connection is being established or retried.
+    flask_thread = threading.Thread(
+        target=lambda: api.app.run(debug=False, host=listen, port=port, threaded=True),
+        daemon=True,
+    )
+    flask_thread.start()
+    LOG.info("API server started on %s:%s", listen, port)
+
     ctrl = concord.AlarmPanelInterface(serial, 0.25, LOG)
     api.CONTROLLER = ctrl
 
@@ -113,4 +122,5 @@ For more information, see: https://github.com/JasonCarter80/concord232
     t.daemon = True
     t.start()
 
-    api.app.run(debug=False, host=listen, port=port, threaded=True)
+    # Keep the main thread alive as long as the serial loop is running.
+    t.join()
