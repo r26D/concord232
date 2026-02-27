@@ -5,7 +5,7 @@
 # Example: ./start_server.sh --serial rfc2217://192.168.3.89:5500 --port 5008
 
 # Default values
-SERIAL_URL="rfc2217://192.168.3.89:5500"
+SERIAL_URL="socket://192.168.3.89:5500"
 PORT=5008
 
 # Allow overrides from command line
