@@ -371,7 +371,7 @@ skip = [".venv", "concord232.egg-info", "__pycache__"]
 - `concord232/` - Core library code
 - `concord232_client` - Command-line client
 - `concord232_server` - Server exposing HTTP API
-- `addon-concord232/` - Home Assistant app (formerly add-on; runs the server on HA OS, e.g. Yellow)
+- `addon_concord232/` - Home Assistant app (formerly add-on; runs the server on HA OS, e.g. Yellow)
 - `docs-site/docs/` - Documentation (including [migration guide](docs-site/docs/migration-mac-mini-to-ha-yellow.md) to HA Yellow)
 - `tests/` - Test suite
 - `README.md` - Project documentation

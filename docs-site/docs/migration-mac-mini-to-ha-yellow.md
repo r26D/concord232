@@ -81,7 +81,8 @@ Once the app is running and the Concord integration works from HA:
 
 | Issue | What to check |
 |-------|----------------|
-| **App doesn’t appear in the store** | The app must be in a **top-level** folder of the repo (`addon-concord232/`). Remove the repository (⋮ → Repositories → remove it), then add it again. Wait a minute and refresh. Ensure you’re using the repo URL that contains `addon-concord232/` and `repository.yaml` at the root. |
+| **App doesn’t appear in the store** | The app must be in a **top-level** folder of the repo (`addon_concord232/`). Remove the repository (⋮ → Repositories → remove it), then add it again. Wait a minute and refresh. Ensure you’re using the repo URL that contains `addon_concord232/` and `repository.yaml` at the root. |
+| **No Install button** | The add-on folder name must match the slug (`addon_concord232`). Remove the repo, pull the latest changes, then re-add the repo and refresh. |
 | App won’t start | **Log** tab: missing `serial` or wrong device/URL; port in use. |
 | “Serial port” errors | Correct **serial** path (`/dev/ttyUSB0` etc.) or RFC2217 URL; adapter plugged in and not used by another app. |
 | Integration can’t connect | Host/port in the Concord Alarm integration match the app (e.g. `localhost:5007`). Firewall on the Yellow usually allows localhost. |
@@ -89,9 +90,9 @@ Once the app is running and the Concord integration works from HA:
 
 ## App files in this repo
 
-- **App:** `addon-concord232/` at the repo root (config.yaml, Dockerfile, build.yaml, run.sh, DOCS.md).
+- **App:** `addon_concord232/` at the repo root (config.yaml, Dockerfile, build.yaml, run.sh, DOCS.md).
 - **Repository:** root `repository.yaml` so this repo can be added as an app source in Home Assistant (**Settings → Apps → ⋮ → Repositories**).
 
-The app must live in a **top-level directory** of the repo so the Supervisor can find it. If you fork the repo, keep the `addon-concord232/` folder at the root.
+The app must live in a **top-level directory** of the repo so the Supervisor can find it. If you fork the repo, keep the `addon_concord232/` folder at the root.
 
 The app installs `concord232` from PyPI and runs `concord232_server` with your configured serial and port, so it behaves like your previous Mac Mini server but managed by HA and started automatically on boot.
