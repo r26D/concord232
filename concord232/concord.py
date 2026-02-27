@@ -122,7 +122,11 @@ class SerialInterface(object):
         return MSG_START
 
     def _read1(self) -> str:
-        c = self.serdev.read(size=1).decode("utf-8")
+        # Use latin-1 (ISO-8859-1) rather than utf-8 so that any single byte
+        # value (0x00-0xFF) decodes without error. Stray bytes such as 0xFF
+        # (Telnet IAC) sent by some network serial servers are safely decoded
+        # and then discarded by wait_for_message_start().
+        c = self.serdev.read(size=1).decode("latin-1")
         return cast(str, c)
 
     def _try_to_read(self, n: int) -> Tuple[List[str], List[str]]:
