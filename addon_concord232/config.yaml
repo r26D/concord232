@@ -13,7 +13,7 @@ init: false
 ports:
   5007/tcp: 5007
 ports_description:
-  5007: Concord232 HTTP API
+  5007/tcp: Concord232 HTTP API
 options:
   serial: rfc2217://192.168.3.89:5500
   port: 5007
