@@ -1,3 +1,7 @@
+## 0.15.10
+
+- Fix: add `[tool.setuptools.packages.find]` to pyproject.toml so all sub-packages (`concord232.server`, `concord232.client`) are installed.
+
 ## 0.15.9
 
 - Fix: add `__init__.py` to `concord232/server/` and `concord232/client/` so sub-packages are installed correctly (`No module named 'concord232.server'` resolved).

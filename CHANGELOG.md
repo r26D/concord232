@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.10] - 2026-02-27
+
+- Fix: `[tool.setuptools.packages.find]` in `pyproject.toml` ensures `concord232.server` and `concord232.client` sub-packages are included when installed from tarball.
+
 ## [0.15.9] - 2026-02-27
 
 - Fix: add `__init__.py` to `concord232/server/` and `concord232/client/` and use `find_packages()` in `setup.py` so sub-packages are installed.
