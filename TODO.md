@@ -10,6 +10,10 @@
 - [ ] Add or review LICENSE for appropriateness
 - [ ] Add CONTRIBUTING.md for external contributors
 
+## Assets
+
+- [ ] Add an icon for project
+
 ## Features
 
 - [ ] Enable switching keypad to a different partition
