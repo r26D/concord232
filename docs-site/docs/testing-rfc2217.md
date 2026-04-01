@@ -39,3 +39,24 @@ python scripts/test_rfc2217.py rfc2217://192.168.3.89:5500
 - **Failure:** Error message (e.g. connection refused, timeout) and exit code 1.
 
 The script opens the URL with pyserial (same as the concord232 server), does a short read, then closes. No data is required from the panel for the connection test to succeed.
+
+## Troubleshooting dropped connections
+
+**Symptoms**
+
+- Log lines like `Unable to send message (timeout), too many attempts` — the server is not receiving an ACK from the panel within the retry window. Often appears together with network or serial-server issues.
+- `serial.serialutil.SerialException: connection failed (reader thread died)` — the RFC2217 TCP session to ser2net (or similar) closed; pyserial’s background reader exited.
+
+**Typical causes**
+
+- ser2net or the serial device restarted; Wi‑Fi or Ethernet blip; wrong ser2net mode (must be **telnet**, not raw, for `rfc2217://`).
+- Physical USB/RS-232 path to the panel unplugged or the automation module not powered.
+
+**Recovery**
+
+Recent server builds reconnect automatically: the serial loop closes the dead port, waits a few seconds, opens the same URL again, and re-requests zone and dynamic data. Until the link is healthy again, the HTTP API may stay up while panel commands fail or time out.
+
+**Checks**
+
+- Confirm `nc -zv host 5500` (or your port) from the host running concord232.
+- On the ser2net box, confirm the device node still exists and ser2net logs show a stable session.

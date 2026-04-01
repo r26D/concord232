@@ -45,6 +45,9 @@ ACK_TIMEOUT_INBOUND = 1.0
 ACK_TIMEOUT_OUTBOUND = 2.0
 MAX_RESENDS = 3
 
+# Delay between failed serial reopen attempts (e.g. RFC2217 / ser2net dropped).
+RECONNECT_SLEEP_SECS = 5.0
+
 STOP = "STOP"
 
 
@@ -276,6 +279,7 @@ def decode_message_from_ascii(ascii_msg: str) -> List[int]:
 
 class AlarmPanelInterface(object):
     def __init__(self, dev_name: str, timeout_secs: float, logger: Any) -> None:
+        self.dev_name = dev_name
         self.serial_interface = SerialInterface(
             dev_name, timeout_secs, self.ctrl_char_cb, logger
         )
@@ -394,114 +398,159 @@ class AlarmPanelInterface(object):
     def stop_loop(self) -> None:
         self.tx_queue.put(STOP)
 
+    def _bootstrap_panel_data(self) -> None:
+        self.request_zones()
+        self.request_dynamic_data_refresh()
+
+    def _reconnect_serial(self) -> None:
+        """
+        Recreate the serial port after RFC2217/TCP drop or similar.
+        Retries until the port opens again.
+        """
+        if self.dev_name == "fake":
+            return
+        while True:
+            try:
+                try:
+                    self.serial_interface.close()
+                except Exception:
+                    pass
+                self.serial_interface = SerialInterface(
+                    self.dev_name, self.timeout_secs, self.ctrl_char_cb, self.logger
+                )
+                self.logger.info("Serial port reconnected: %s", self.dev_name)
+                self.reset_pending_tx()
+                self._bootstrap_panel_data()
+                return
+            except Exception as ex:
+                self.logger.error(
+                    "Serial reconnect failed (%s), retrying in %.1fs",
+                    ex,
+                    RECONNECT_SLEEP_SECS,
+                )
+                time.sleep(RECONNECT_SLEEP_SECS)
+
     def message_loop(self) -> None:
         self.logger.debug("Message Loop Starting")
         # self.request_partitions();
         # time.sleep(1)
-        self.request_zones()
-        # time.sleep(1)
-        # self.request_users();
-        # time.sleep(1)
-        self.request_dynamic_data_refresh()
+        self._bootstrap_panel_data()
         loop_start_at = datetime.now()
         loop_last_print_at = datetime.now()
 
         while True:
-            # Two parts to loop body: 1) look for and handle any
-            # incoming messages, and 2) send out any outgoing
-            # messages.
-
-            # Hacky flag variables to avoid spinning fast if there is
-            # nothing coming in and nothing going out (the common
-            # case...)
-            no_inputs = True
-            no_outputs = True
-
-            #
-            # Handle any synthetic messages and loop them back to us.
-            #
-            if not self.fake_rx_queue.empty():
-                no_inputs = False
-                msg = self.fake_rx_queue.get()
-                self.logger.debug("Received synthetic message")
-                # Don't need to confirm checksum as we computed it
-                # ourselves!
-                self.handle_message(msg)
-
-            #
-            # Handle incoming messages.
-            #
-            # Two part test: the first part will fail right away if
-            # there no characters, regardless of the timeout, so we
-            # minimize time waiting on messages that won't arrive.
-            if (
-                self.serial_interface.message_chars_maybe_available()
-                and self.serial_interface.wait_for_message_start() == MSG_START
-            ):
-                no_inputs = False
-
-                try:
-                    msg = self.serial_interface.read_next_message()
-                    # self.logger.debug(msg)
-                except CommException as ex:
-                    self.send_nak()
-                    self.logger.error(repr(ex))
-                    continue
-
-                if len(msg) < 3:
-                    # Message too short, need at least length byte,
-                    # command byte, and checksum byte.
-                    self.send_nak()
-                    self.logger.error(
-                        "Message too short: %r" % encode_message_to_ascii(msg)
-                    )
-
-                if validate_message_checksum(msg):
-                    self.send_ack()
-                    self.handle_message(msg)
-                else:
-                    # Bad checksum
-                    self.send_nak()
-                    self.logger.error(
-                        "Bad checksum for message %r" % encode_message_to_ascii(msg)
-                    )
-
-            # TODO: check here if there is pending input and handle it
-            # by looping again, before worrying about sending out any
-            # commands.
-
-            #
-            # If there is a pending message awaiting ack, see if it needs
-            # to be resent.  If there is no pending message (or the
-            # pending message timed-out), send what's on the transmit
-            # queue.
-            #
-            if self.tx_pending is not None and self.tx_timeout_exceded():
-                no_outputs = False
-                self.maybe_resend_message("timeout")
-            if self.tx_pending is None and not self.tx_queue.empty():
-                no_outputs = False
-                msg = self.tx_queue.get()
-                if msg == STOP:
-                    # Close the serial port once all the pending
-                    # messages have been sent.  Because we close it,
-                    # we can't rerun message_loop(); we have to create
-                    # a new AlarmPanelInterface instance.
-                    self.serial_interface.close()
+            try:
+                result = self._message_loop_once(loop_start_at, loop_last_print_at)
+                if result is None:
                     return
-                self.send_message(msg)
-
-            # If there was nothing to do on this pass through the
-            # loop, take a nap...
-            if no_inputs and no_outputs:
-                time.sleep(self.timeout_secs)
-
-            secs_since_print = total_secs(datetime.now() - loop_last_print_at)
-            if secs_since_print > 20:
-                self.logger.debug(
-                    "Looping %d" % total_secs(datetime.now() - loop_start_at)
-                )
+                loop_last_print_at = result
+            except serial.SerialException as ex:
+                self.logger.error("Serial connection lost: %s", ex)
+                if self.dev_name == "fake":
+                    raise
+                self._reconnect_serial()
                 loop_last_print_at = datetime.now()
+
+    def _message_loop_once(
+        self, loop_start_at: datetime, loop_last_print_at: datetime
+    ) -> Optional[datetime]:
+        # Two parts to loop body: 1) look for and handle any
+        # incoming messages, and 2) send out any outgoing
+        # messages.
+
+        # Hacky flag variables to avoid spinning fast if there is
+        # nothing coming in and nothing going out (the common
+        # case...)
+        no_inputs = True
+        no_outputs = True
+
+        #
+        # Handle any synthetic messages and loop them back to us.
+        #
+        if not self.fake_rx_queue.empty():
+            no_inputs = False
+            msg = self.fake_rx_queue.get()
+            self.logger.debug("Received synthetic message")
+            # Don't need to confirm checksum as we computed it
+            # ourselves!
+            self.handle_message(msg)
+
+        #
+        # Handle incoming messages.
+        #
+        # Two part test: the first part will fail right away if
+        # there no characters, regardless of the timeout, so we
+        # minimize time waiting on messages that won't arrive.
+        if (
+            self.serial_interface.message_chars_maybe_available()
+            and self.serial_interface.wait_for_message_start() == MSG_START
+        ):
+            no_inputs = False
+
+            try:
+                msg = self.serial_interface.read_next_message()
+                # self.logger.debug(msg)
+            except CommException as ex:
+                self.send_nak()
+                self.logger.error(repr(ex))
+                return loop_last_print_at
+
+            if len(msg) < 3:
+                # Message too short, need at least length byte,
+                # command byte, and checksum byte.
+                self.send_nak()
+                self.logger.error(
+                    "Message too short: %r" % encode_message_to_ascii(msg)
+                )
+
+            if validate_message_checksum(msg):
+                self.send_ack()
+                self.handle_message(msg)
+            else:
+                # Bad checksum
+                self.send_nak()
+                self.logger.error(
+                    "Bad checksum for message %r" % encode_message_to_ascii(msg)
+                )
+
+        # TODO: check here if there is pending input and handle it
+        # by looping again, before worrying about sending out any
+        # commands.
+
+        #
+        # If there is a pending message awaiting ack, see if it needs
+        # to be resent.  If there is no pending message (or the
+        # pending message timed-out), send what's on the transmit
+        # queue.
+        #
+        if self.tx_pending is not None and self.tx_timeout_exceded():
+            no_outputs = False
+            self.maybe_resend_message("timeout")
+        if self.tx_pending is None and not self.tx_queue.empty():
+            no_outputs = False
+            msg = self.tx_queue.get()
+            if msg == STOP:
+                # Close the serial port once all the pending
+                # messages have been sent.  Because we close it,
+                # we can't rerun message_loop(); we have to create
+                # a new AlarmPanelInterface instance.
+                self.serial_interface.close()
+                return None
+            self.send_message(msg)
+
+        # If there was nothing to do on this pass through the
+        # loop, take a nap...
+        if no_inputs and no_outputs:
+            time.sleep(self.timeout_secs)
+
+        secs_since_print = total_secs(datetime.now() - loop_last_print_at)
+        if secs_since_print > 20:
+            self.logger.debug(
+                "Looping %d" % total_secs(datetime.now() - loop_start_at)
+            )
+            loop_last_print_at = datetime.now()
+
+        return loop_last_print_at
 
     def handle_message(self, msg: List[int]) -> None:
         cmd1 = msg[1]

@@ -71,13 +71,13 @@ log =
 
 You can then start the server with just:
 
-```
+```bash
 concord232_server
 ```
 
 Or specify a different config file:
 
-```
+```bash
 concord232_server --config mysettings.ini
 ```
 
@@ -85,7 +85,7 @@ Any command-line argument (e.g., `--serial`, `--port`) will override the value i
 
 Once that is running, you should be able to do something like this::
 
-```
+```text
  $ concord232_client summary
  +------+-----------------+--------+--------+
  | Zone |       Name      | Bypass | Status |

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.11] - 2026-03-31
+
+- Serial: automatic reconnect after RFC2217/TCP drops (`SerialException`); retry with backoff, reopen port, re-bootstrap zones and dynamic data (`concord232/concord.py`).
+- Docs: README code fence languages; RFC2217 testing guide expanded with troubleshooting for dropped connections and recovery behavior.
+
 ## [0.15.10] - 2026-02-27
 
 - Fix: `[tool.setuptools.packages.find]` in `pyproject.toml` ensures `concord232.server` and `concord232.client` sub-packages are included when installed from tarball.
