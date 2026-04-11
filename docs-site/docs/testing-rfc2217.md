@@ -1,6 +1,6 @@
-# Testing RFC2217 serial connection
+# Testing network serial (RFC2217 or raw TCP)
 
-Use this to verify that `rfc2217://192.168.3.89:5500` (or any RFC2217 URL) is reachable and that pyserial can open it.
+Use `scripts/test_rfc2217.py` to verify that a **socket** or **RFC2217** URL is reachable and that pyserial can open it. The default URL is **`socket://192.168.3.89:5500`**, matching the Home Assistant add-on default — many bridges use raw TCP and do **not** complete RFC2217 parameter negotiation.
 
 ## Quick checks (no Python)
 
@@ -29,14 +29,22 @@ From the project root, with the concord232 environment installed (e.g. `pip inst
 python scripts/test_rfc2217.py
 ```
 
-To test a different URL:
+To test RFC2217 explicitly (only if your server negotiates baud/parity over Telnet):
 
 ```bash
 python scripts/test_rfc2217.py rfc2217://192.168.3.89:5500
 ```
 
+### `Remote does not accept parameter change (RFC2217)`
+
+TCP connects, but pyserial fails during RFC2217 subnegotiation (baudrate, parity, etc.). Your serial bridge is probably **raw TCP** or does not implement full RFC2217.
+
+**Fix:** Use **`socket://host:port`** in the add-on / `config.ini` `[server] serial` — same host and port. The line speed and parity are applied on the device running ser2net/socat (e.g. 9600 8O1 for the Concord automation module), not over RFC2217.
+
 - **Success:** “Connected successfully” and exit code 0.
 - **Failure:** Error message (e.g. connection refused, timeout) and exit code 1.
+
+**`Could not open port … timed out`** (from pyserial) means the **TCP connection** to `host:port` did not complete. That is a network reachability problem (wrong IP/subnet, device offline, ser2net not listening, or firewall), not the Concord serial protocol. The script runs a **TCP preflight** first so you see whether plain `socket.connect` works.
 
 The script opens the URL with pyserial (same as the concord232 server), does a short read, then closes. No data is required from the panel for the connection test to succeed.
 
