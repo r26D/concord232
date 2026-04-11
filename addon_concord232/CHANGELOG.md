@@ -1,3 +1,8 @@
+## 0.16.2
+
+- Fix: serial reconnect crash loop — add post-connect settling delay, drain stale TX queue, and exponential backoff on consecutive reconnects.
+- Update configuration files for improved server settings.
+
 ## 0.16.1
 
 - Fix: add proper icon.png (256x256) and logo.png so the add-on displays an icon on the HA Apps screen.
