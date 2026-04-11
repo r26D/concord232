@@ -1,3 +1,10 @@
+## 0.16.3
+
+- Fix broken %-format strings in command type assertion messages
+- Fix CI: update test assertion for partition keyword argument
+- Bump GitHub Actions to Node.js 24-compatible versions
+- Format scripts with black
+
 ## 0.16.2
 
 - Fix: serial reconnect crash loop — add post-connect settling delay, drain stale TX queue, and exponential backoff on consecutive reconnects.
