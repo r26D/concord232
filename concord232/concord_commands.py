@@ -244,7 +244,7 @@ def num_to_bytes(num: int) -> List[int]:
 
 def cmd_panel_type(self: Any, msg: List[Any]) -> Dict[str, Any]:
     ck_msg_len(msg, 0x01, 0x0B)
-    assert msg[1] == 0x01, "Unexpected command type 0x02x" % msg[1]
+    assert msg[1] == 0x01, "Unexpected command type 0x%02x" % msg[1]
     panel_type = msg[2]
     d = {
         "panel_type": PANEL_TYPES.get(
@@ -276,7 +276,7 @@ def build_state_list(state_code: int, state_dict: Dict[int, str]) -> List[str]:
 
 def cmd_zone_status(self: Any, msg: List[Any]) -> Dict[str, Any]:
     ck_msg_len(msg, 0x21, 0x07)
-    assert msg[1] == 0x21, "Unexpected command type 0x02x" % msg[1]
+    assert msg[1] == 0x21, "Unexpected command type 0x%02x" % msg[1]
     d = {
         "partition_number": msg[2],
         "area_number": msg[3],
@@ -304,7 +304,7 @@ def cmd_zone_status(self: Any, msg: List[Any]) -> Dict[str, Any]:
 
 def cmd_zone_data(self: Any, msg: List[Any]) -> Dict[str, Any]:
     ck_msg_len(msg, 0x03, 0x09, exact_len=False)
-    assert msg[1] == 0x03, "Unexpected command type 0x02x" % msg[1]
+    assert msg[1] == 0x03, "Unexpected command type 0x%02x" % msg[1]
     d = {
         "partition_number": msg[2],
         "area_number": msg[3],
