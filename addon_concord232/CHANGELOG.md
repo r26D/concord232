@@ -1,3 +1,7 @@
+## 0.16.0
+
+- Add partition support to arm/disarm commands and fix partition data bug.
+
 ## 0.15.10
 
 - Fix: add `[tool.setuptools.packages.find]` to pyproject.toml so all sub-packages (`concord232.server`, `concord232.client`) are installed.
