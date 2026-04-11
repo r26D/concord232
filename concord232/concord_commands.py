@@ -450,8 +450,6 @@ def cmd_touchpad(self: Any, msg: List[Any]) -> Dict[str, Any]:
         "display_text": "",
         "timestamp": datetime.datetime.now(),
     }
-    if d["partition_number"] > 1:
-        return {}
     if len(msg) > 0x06:
         d["display_text"] = decode_text_tokens(msg[6:-1])
     self.display_messages.append(d)
@@ -475,7 +473,7 @@ def cmd_partition_data(self: Any, msg: List[Any]) -> Dict[str, Any]:
     if len(msg) > 0x05:
         d["partition_text"] = decode_text_tokens(msg[5:-1])
 
-    if d["partition_number"] not in self.zones:
+    if d["partition_number"] not in self.partitions:
         self.partitions[d["partition_number"]] = d
     else:
         rd = self.partitions[d["partition_number"]]

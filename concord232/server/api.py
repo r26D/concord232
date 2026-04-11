@@ -144,22 +144,22 @@ def command() -> Any:
     if CONTROLLER is None:
         return Response("Controller not initialized", status=503)
     args = flask.request.args
+    partition = int(args.get("partition", 1))
     if args.get("cmd") == "arm":
         option = args.get("option")
         if args.get("level") == "stay":
-            CONTROLLER.arm_stay(option)
+            CONTROLLER.arm_stay(option, partition=partition)
         elif args.get("level") == "away":
-            CONTROLLER.arm_away(option)
+            CONTROLLER.arm_away(option, partition=partition)
     elif args.get("cmd") == "disarm":
         master_pin = args.get("master_pin")
         if master_pin is not None:
-            CONTROLLER.disarm(str(master_pin))
+            CONTROLLER.disarm(str(master_pin), partition=partition)
         else:
             return Response("Missing master_pin", status=400)
     elif args.get("cmd") == "keys":
         keys = args.get("keys")
         group = args.get("group")
-        partition = int(args.get("partition", 1))
         keys_list = list(keys) if keys is not None else []
         CONTROLLER.send_keys(
             keys_list, bool(group) if group is not None else False, partition=partition

@@ -400,6 +400,7 @@ class AlarmPanelInterface(object):
 
     def _bootstrap_panel_data(self) -> None:
         self.request_zones()
+        self.request_partitions()
         self.request_dynamic_data_refresh()
 
     def _reconnect_serial(self) -> None:
@@ -545,9 +546,7 @@ class AlarmPanelInterface(object):
 
         secs_since_print = total_secs(datetime.now() - loop_last_print_at)
         if secs_since_print > 20:
-            self.logger.debug(
-                "Looping %d" % total_secs(datetime.now() - loop_start_at)
-            )
+            self.logger.debug("Looping %d" % total_secs(datetime.now() - loop_start_at))
             loop_last_print_at = datetime.now()
 
         return loop_last_print_at
@@ -655,21 +654,21 @@ class AlarmPanelInterface(object):
         msg = build_keypress(keys, partition, area=0, no_check=True)
         self.enqueue_msg_for_tx(msg)
 
-    def arm_stay(self, option: Optional[str]) -> None:
+    def arm_stay(self, option: Optional[str], partition: int = 1) -> None:
         if option is None:
-            self.send_keypress([0x02])
+            self.send_keypress([0x02], partition=partition)
         elif option == "silent":
-            self.send_keypress([0x05, 0x02])
+            self.send_keypress([0x05, 0x02], partition=partition)
         elif option == "instant":
-            self.send_keypress([0x02, 0x04])
+            self.send_keypress([0x02, 0x04], partition=partition)
 
-    def arm_away(self, option: Optional[str]) -> None:
+    def arm_away(self, option: Optional[str], partition: int = 1) -> None:
         if option is None:
-            self.send_keypress([0x03])
+            self.send_keypress([0x03], partition=partition)
         elif option == "silent":
-            self.send_keypress([0x05, 0x03])
+            self.send_keypress([0x05, 0x03], partition=partition)
         elif option == "instant":
-            self.send_keypress([0x03, 0x04])
+            self.send_keypress([0x03, 0x04], partition=partition)
 
     def send_keys(self, keys: List[str], group: bool, partition: int = 1) -> None:
         msg = []
@@ -685,9 +684,9 @@ class AlarmPanelInterface(object):
             self.logger.info("Sending group of keys: %r" % msg)
             self.send_keypress(msg, partition=partition)
 
-    def disarm(self, master_pin: str) -> None:
+    def disarm(self, master_pin: str, partition: int = 1) -> None:
         self.master_pin = master_pin
-        self.send_keypress([0x20])
+        self.send_keypress([0x20], partition=partition)
 
     def inject_alarm_message(
         self, partition: int, general_type: int, specific_type: int, event_data: int = 0
