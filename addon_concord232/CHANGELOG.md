@@ -1,3 +1,7 @@
+## 0.16.1
+
+- Fix: add proper icon.png (256x256) and logo.png so the add-on displays an icon on the HA Apps screen.
+
 ## 0.16.0
 
 - Add partition support to arm/disarm commands and fix partition data bug.
