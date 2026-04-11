@@ -2,6 +2,7 @@
 
 ## Codebase Improvements
 
+- [ ] Consider migrating from Flask dev server to Gunicorn for production use
 - [ ] Pin dependency versions for reproducibility
 - [ ] Document virtual environment setup
 - [x] Ensure no secrets or credentials are in the repo
@@ -12,7 +13,7 @@
 
 ## Assets
 
-- [ ] Add an icon for project
+- [x] Add an icon for project
 
 ## Features
 
