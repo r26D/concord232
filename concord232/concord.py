@@ -48,6 +48,15 @@ MAX_RESENDS = 3
 # Delay between failed serial reopen attempts (e.g. RFC2217 / ser2net dropped).
 RECONNECT_SLEEP_SECS = 5.0
 
+# After (re)opening the serial port, wait this long for the link to settle
+# before sending bootstrap commands.  RFC2217 / ser2net connections in
+# particular need a moment before the panel is ready to ACK.
+POST_CONNECT_SETTLE_SECS = 2.0
+
+# Consecutive reconnect cycle backoff: base * 2^(n-1), capped at max.
+RECONNECT_BACKOFF_BASE_SECS = 5.0
+RECONNECT_BACKOFF_MAX_SECS = 120.0
+
 STOP = "STOP"
 
 
@@ -295,6 +304,7 @@ class AlarmPanelInterface(object):
         self.tx_queue: Any = Queue.Queue()
         self.fake_rx_queue: Any = Queue.Queue()
         self.reset_pending_tx()
+        self._consecutive_reconnects = 0
         self.message_handlers: dict[Any, list[Callable[[dict], None]]] = {}
         for command_code, (command_id, command_name, parser_fn) in RX_COMMANDS.items():
             self.message_handlers[command_id] = []
@@ -319,6 +329,7 @@ class AlarmPanelInterface(object):
             if self.tx_pending is None:
                 self.logger.debug("Spurious ACK")
 
+            self._consecutive_reconnects = 0
             self.reset_pending_tx()
         elif cc == NAK:
             if self.tx_pending is None:
@@ -403,13 +414,41 @@ class AlarmPanelInterface(object):
         self.request_partitions()
         self.request_dynamic_data_refresh()
 
+    def _drain_tx_queue(self) -> None:
+        """Discard all pending outbound messages so stale commands don't pile up."""
+        drained = 0
+        while not self.tx_queue.empty():
+            try:
+                self.tx_queue.get_nowait()
+                drained += 1
+            except Queue.Empty:
+                break
+        if drained:
+            self.logger.info("Drained %d stale message(s) from TX queue", drained)
+
     def _reconnect_serial(self) -> None:
         """
         Recreate the serial port after RFC2217/TCP drop or similar.
-        Retries until the port opens again.
+        Retries until the port opens again.  Uses exponential backoff
+        when the panel keeps dropping immediately after reconnect.
         """
         if self.dev_name == "fake":
             return
+
+        self._consecutive_reconnects += 1
+
+        if self._consecutive_reconnects > 1:
+            backoff = min(
+                RECONNECT_BACKOFF_BASE_SECS * 2 ** (self._consecutive_reconnects - 2),
+                RECONNECT_BACKOFF_MAX_SECS,
+            )
+            self.logger.warning(
+                "Consecutive reconnect #%d — backing off %.1fs before retry",
+                self._consecutive_reconnects,
+                backoff,
+            )
+            time.sleep(backoff)
+
         while True:
             try:
                 try:
@@ -421,6 +460,14 @@ class AlarmPanelInterface(object):
                 )
                 self.logger.info("Serial port reconnected: %s", self.dev_name)
                 self.reset_pending_tx()
+                self._drain_tx_queue()
+
+                self.logger.info(
+                    "Waiting %.1fs for serial link to settle",
+                    POST_CONNECT_SETTLE_SECS,
+                )
+                time.sleep(POST_CONNECT_SETTLE_SECS)
+
                 self._bootstrap_panel_data()
                 return
             except Exception as ex:
