@@ -7,6 +7,7 @@ Usage: python test_rfc2217.py [URL]
     socket://192.168.3.89:5500   (raw TCP; use if RFC2217 param change is rejected)
 Default: rfc2217://192.168.3.89:5500
 """
+
 import sys
 
 try:

@@ -5,6 +5,7 @@ Checks: host reachable (TCP), optional HTTP on port 8123 (HA) and 5007 (Concord2
 Usage: python test_ha_yellow.py [host] [--port PORT] [--no-8123] [--no-5007]
 Default host: 192.168.4.36
 """
+
 import argparse
 import socket
 import sys
