@@ -1,3 +1,10 @@
+## 0.16.4
+
+- Docs: Advantech EKI-1511L-A — when to use `socket://` vs `rfc2217://`, Telnet IAC troubleshooting, Superbus testing guide (`docs-site`).
+- Add `scripts/test_superbus.py` to send Concord frames and inspect ACK / panel messages (repo root on `sys.path`, no install required).
+- Improve `scripts/test_rfc2217.py` (TCP preflight, default `socket://`, Concord line settings).
+- Serial: optional debug logging for TX/RX and message-loop diagnostics.
+
 ## 0.16.3
 
 - Fix broken %-format strings in command type assertion messages

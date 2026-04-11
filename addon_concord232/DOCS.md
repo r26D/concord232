@@ -36,11 +36,12 @@ Use this device in **TCP Server** mode so it listens for incoming TCP connection
 
 1. Give the EKI a fixed IP on your LAN (web UI).
 2. Set **Operation mode** to **TCP Server** (raw TCP to the serial port — not VCOM).
-3. If the UI offers **Telnet** vs **raw / transparent / RFC 2217** for the TCP connection, choose **raw or transparent** so bytes pass through unchanged. **Telnet mode** injects negotiation bytes (`0xff` IAC) and will break Concord; `scripts/test_superbus.py` will show `ff fb …` in RX instead of **`06`** (ACK).
-4. On the **serial** settings page, match the panel: **9600 baud**, **8 data bits**, **odd parity**, **1 stop bit**, no flow control (same line format `concord232` uses).
-5. In this add-on, set **serial** to `socket://<EKI_IP>:<port>` (default port is often **5500** — confirm in the UI).
+3. On the **serial** settings page, match the panel: **9600 baud**, **8 data bits**, **odd parity**, **1 stop bit**, no flow control (same line format `concord232` uses).
+4. **TCP URL in this add-on** — pick one:
+   - **`socket://<EKI_IP>:<port>`** — Use when the EKI forwards **only** RS-232 octets on TCP (true raw / transparent). Best if `scripts/test_superbus.py` shows **`06`** (ACK) or **`0a`** (message start), not `ff fb …`.
+   - **`rfc2217://<EKI_IP>:<port>`** — Use when the device speaks **Telnet** on TCP: a plain `socket://` connection may show only **`ff`** (IAC) negotiation in RX. PySerial’s RFC2217 client completes Telnet setup and exposes a clean serial stream; some EKI firmware needs this. If open fails with “Remote does not accept parameter change”, try the other URL or adjust the EKI’s RFC2217/Telnet options per its manual.
 
-Use **`socket://`**, not `rfc2217://`. The EKI exposes plain TCP; it does not perform RFC2217 Telnet parameter negotiation.
+Default port is often **5500** — confirm in the UI.
 
 ### ser2net in RFC2217 mode (Raspberry Pi, another Linux host)
 

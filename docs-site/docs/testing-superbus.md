@@ -44,7 +44,13 @@ If you see **no ACK and no LF** in the window, verify wiring, EKI parity, and th
 
 If the hex dump looks like `ff fb 03 ff fb 01 ff fe 01 ff fd 00` and never **`06`** (ACK) or **`0a`** (message start), the TCP session is carrying **Telnet option negotiation** (`0xff` = IAC), not raw RS-232 bytes from the Superbus module.
 
-**Fix (EKI / device server):** In the web UI, find the TCP/serial **connection** or **packing** mode for that port and choose **raw / transparent / binary** TCP — **not** “Telnet” or “Telnet RFC 2217” if you only need a byte pipe to RS-232. Save, reboot the device if required, and run the test again. Concord expects a transparent octet stream; Telnet framing must not run between the client and the serial line.
+**Fix (EKI / device server):**
+
+1. **Prefer raw TCP on the device** — In the web UI, set the TCP/serial mode to **raw / transparent / binary** so the TCP stream is only RS-232 bytes.
+
+2. **Or use `rfc2217://` in concord232** — If the EKI always uses Telnet on that port and you still see `ff fb …` with `socket://`, try **`rfc2217://host:port`** instead. PySerial negotiates Telnet/RFC2217 and presents a normal serial byte stream; many users see **`0a`** (panel messages) with this URL even when `socket://` only showed IAC bytes.
+
+Re-run `scripts/test_superbus.py` with the same URL you will use in the server.
 
 ## See also
 
