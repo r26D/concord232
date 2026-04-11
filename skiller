@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# skiller — manage AI skills in this project
+#
+# SKILLER_ROOT must be set to your skiller repository clone so the same
+# project works on any machine (no path is stored in the repo).
+
+if [[ -z "${SKILLER_ROOT:-}" ]]; then
+  echo "" >&2
+  echo "Warning: SKILLER_ROOT is not set. Skiller cannot run without it." >&2
+  echo "" >&2
+  echo "Set it to your skiller repository clone, e.g.:" >&2
+  echo "  export SKILLER_ROOT=/path/to/skiller" >&2
+  echo "" >&2
+  exit 1
+fi
+exec "$SKILLER_ROOT/scripts/skiller.sh" "$@"

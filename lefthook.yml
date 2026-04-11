@@ -1,0 +1,6 @@
+# Skiller autosync via remote config — hooks defined in skiller repo
+# Update: pull skiller then run `lefthook install` in this project.
+remotes:
+  - git_url: "git@github.com:r26D/skiller.git"
+    configs:
+      - lefthook-skiller-remote.yml
