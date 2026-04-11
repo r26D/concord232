@@ -30,6 +30,18 @@ Replace `192.168.1.100` with the device's IP address.
 - **MOXA NPort**: `4001`
 - **Digi**: `2101`
 
+#### Advantech EKI-1511L-A (RS-232 to Ethernet)
+
+Use this device in **TCP Server** mode so it listens for incoming TCP connections and forwards bytes to the Concord **automation module** RS-232 port.
+
+1. Give the EKI a fixed IP on your LAN (web UI).
+2. Set **Operation mode** to **TCP Server** (raw TCP to the serial port — not VCOM).
+3. If the UI offers **Telnet** vs **raw / transparent / RFC 2217** for the TCP connection, choose **raw or transparent** so bytes pass through unchanged. **Telnet mode** injects negotiation bytes (`0xff` IAC) and will break Concord; `scripts/test_superbus.py` will show `ff fb …` in RX instead of **`06`** (ACK).
+4. On the **serial** settings page, match the panel: **9600 baud**, **8 data bits**, **odd parity**, **1 stop bit**, no flow control (same line format `concord232` uses).
+5. In this add-on, set **serial** to `socket://<EKI_IP>:<port>` (default port is often **5500** — confirm in the UI).
+
+Use **`socket://`**, not `rfc2217://`. The EKI exposes plain TCP; it does not perform RFC2217 Telnet parameter negotiation.
+
 ### ser2net in RFC2217 mode (Raspberry Pi, another Linux host)
 
 If you have ser2net running on another machine in `telnet` mode (which enables RFC2217 Telnet option negotiation):

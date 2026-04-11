@@ -2,6 +2,8 @@
 
 Use `scripts/test_rfc2217.py` to verify that a **socket** or **RFC2217** URL is reachable and that pyserial can open it. The default URL is **`socket://192.168.3.89:5500`**, matching the Home Assistant add-on default — many bridges use raw TCP and do **not** complete RFC2217 parameter negotiation.
 
+**Hardware serial servers** (e.g. **Advantech EKI-1511L-A** in TCP Server mode) forward RS-232 over plain TCP. Use **`socket://ip:port`** (often port **5500** on the EKI). Set **9600 8O1** on the device’s serial settings to match the Concord automation module; see the add-on `DOCS.md` for a full EKI checklist.
+
 ## Quick checks (no Python)
 
 1. **Port open**  
@@ -68,3 +70,7 @@ Recent server builds reconnect automatically: the serial loop closes the dead po
 
 - Confirm `nc -zv host 5500` (or your port) from the host running concord232.
 - On the ser2net box, confirm the device node still exists and ser2net logs show a stable session.
+
+## Next: panel protocol
+
+Once TCP/`socket://` works, test **ACK** and panel messages with the Superbus automation module: [Testing the Superbus Automation Module](testing-superbus.md).
