@@ -105,6 +105,13 @@ class SerialInterface(object):
             rtscts=False,
             dsrdtr=False,
         )
+        self.logger.info(
+            "Serial port opened: %s (is_open=%s, baudrate=%d, timeout=%s)",
+            dev_name,
+            self.serdev.is_open,
+            self.serdev.baudrate,
+            self.serdev.timeout,
+        )
 
     def message_chars_maybe_available(self) -> bool:
         return cast(bool, self.serdev.inWaiting() > 0)
@@ -138,7 +145,12 @@ class SerialInterface(object):
         # value (0x00-0xFF) decodes without error. Stray bytes such as 0xFF
         # (Telnet IAC) sent by some network serial servers are safely decoded
         # and then discarded by wait_for_message_start().
-        c = self.serdev.read(size=1).decode("latin-1")
+        raw = self.serdev.read(size=1)
+        if raw:
+            self.logger.debug("RX byte: 0x%02x", raw[0])
+        else:
+            self.logger.debug("RX: timeout (no data)")
+        c = raw.decode("latin-1")
         return cast(str, c)
 
     def _try_to_read(self, n: int) -> Tuple[List[str], List[str]]:
@@ -230,8 +242,9 @@ class SerialInterface(object):
         message-start linefeed character.
         """
         framed_msg = MSG_START + encode_message_to_ascii(msg)
-        # self.logger.debug("write_message: %r" % framed_msg)
-        self.serdev.write(framed_msg.encode())
+        raw = framed_msg.encode()
+        self.logger.debug("TX %d bytes: %s", len(raw), raw.hex(" "))
+        self.serdev.write(raw)
 
     def write(self, data: Any) -> None:
         """Write raw *data* to the serial port."""
@@ -529,10 +542,10 @@ class AlarmPanelInterface(object):
         # Two part test: the first part will fail right away if
         # there no characters, regardless of the timeout, so we
         # minimize time waiting on messages that won't arrive.
-        if (
-            self.serial_interface.message_chars_maybe_available()
-            and self.serial_interface.wait_for_message_start() == MSG_START
-        ):
+        chars_avail = self.serial_interface.message_chars_maybe_available()
+        if chars_avail:
+            self.logger.debug("Bytes available from panel, reading...")
+        if chars_avail and self.serial_interface.wait_for_message_start() == MSG_START:
             no_inputs = False
 
             try:

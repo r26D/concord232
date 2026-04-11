@@ -68,7 +68,7 @@ def test_command_arm_away(client):
 def test_command_disarm(client):
     resp = client.get("/command?cmd=disarm&master_pin=1234")
     assert resp.status_code == 200
-    api.CONTROLLER.disarm.assert_called_with("1234")
+    api.CONTROLLER.disarm.assert_called_with("1234", partition=1)
 
 
 def test_command_keys(client):
