@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Docs: add `docs-site/docs/ser2net-8o1-wiring.md` (8O1, telnet/RFC2217 ser2net, wiring checklist); link from RFC2217 testing doc.
+
 ## [0.15.11] - 2026-03-31
 
 - Serial: automatic reconnect after RFC2217/TCP drops (`SerialException`); retry with backoff, reopen port, re-bootstrap zones and dynamic data (`concord232/concord.py`).

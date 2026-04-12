@@ -4,6 +4,8 @@ Use `scripts/test_rfc2217.py` to verify that a **socket** or **RFC2217** URL is 
 
 **Hardware serial servers** (e.g. **Advantech EKI-1511L-A** in TCP Server mode) forward RS-232 over plain TCP. Use **`socket://ip:port`** (often port **5500** on the EKI). Set **9600 8O1** on the device’s serial settings to match the Concord automation module; see the add-on `DOCS.md` for a full EKI checklist.
 
+If TCP works but you still see **timeouts** and **`reader thread died`**, fix **8O1 parity**, **ser2net telnet/RFC2217 mode**, and **wiring** first—see [ser2net, 8O1 serial, and wiring](ser2net-8o1-wiring.md).
+
 ## Quick checks (no Python)
 
 1. **Port open**  
@@ -18,9 +20,9 @@ Use `scripts/test_rfc2217.py` to verify that a **socket** or **RFC2217** URL is 
    If the port is open, you get a connection (telnet may show Telnet option negotiation; Ctrl+] then `quit` to exit).
 
 2. **ser2net must be in telnet mode**  
-   For RFC2217 to work, the server (e.g. ser2net) must use **telnet** mode, not **raw**. Example ser2net line:
+   For RFC2217 to work, the server (e.g. ser2net) must use **telnet** mode, not **raw**. The serial device should be **9600 8O1** (odd parity). Example ser2net 3.x–style line (keywords may vary by version; see [ser2net, 8O1 serial, and wiring](ser2net-8o1-wiring.md)):
    ```text
-   5500:telnet:0:/dev/ttyUSB0:9600
+   5500:telnet:0:/dev/ttyUSB0:9600 ODD 8DATABITS 1STOPBIT
    ```
 
 ## Python script (same as concord232)
