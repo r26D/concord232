@@ -7,7 +7,7 @@ RUN apk add --no-cache jq
 
 # Install directly from the GitHub repo so local fixes are always included.
 # Update the version label below to bust Docker's layer cache on each release.
-RUN echo "concord232==0.16.4" && \
+RUN echo "concord232==0.16.5" && \
     pip3 install --no-cache-dir \
     "https://github.com/r26D/concord232/archive/refs/heads/main.tar.gz"
 

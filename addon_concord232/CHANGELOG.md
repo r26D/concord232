@@ -1,3 +1,7 @@
+## 0.16.5
+
+- Docs: ser2net 8O1 wiring guide (`docs-site/docs/ser2net-8o1-wiring.md`); RFC2217 testing doc links and ser2net example line with parity.
+
 ## 0.16.4
 
 - Docs: Advantech EKI-1511L-A — when to use `socket://` vs `rfc2217://`, Telnet IAC troubleshooting, Superbus testing guide (`docs-site`).
