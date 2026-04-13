@@ -1,3 +1,7 @@
+## 0.16.7
+
+- Fix: `PanelMqttPublisher` no longer stores the touchpad-enable flag as `self.publish_touchpad`, which shadowed the `publish_touchpad` method and registered a boolean as the TOUCHPAD MQTT handler (`TypeError: 'bool' object is not callable`).
+
 ## 0.16.6
 
 - Optional MQTT publishing for ALARM and TOUCHPAD panel events (versioned JSON payloads, `PanelMqttPublisher`, `concord232/mqtt_events.py`).

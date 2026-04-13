@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="concord232",
-    version="0.16.6",
+    version="0.16.7",
     description="GE Concord 4 RS232 Serial Interface Library and Server",
     author="Jason Carter",
     author_email="jason@jason-carter.net",
