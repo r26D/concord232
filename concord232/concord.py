@@ -665,6 +665,7 @@ class AlarmPanelInterface(object):
             self.logger.debug(repr(decoded_command))
             for handler in self.message_handlers[command_id]:
                 self.logger.debug("Calling handler %r" % handler)
+                handler(decoded_command)
         except Exception as ex:
             self.logger.error(
                 "Problem handling command %r\n%r" % (ex, encode_message_to_ascii(msg))

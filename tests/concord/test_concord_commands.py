@@ -44,11 +44,15 @@ def test_build_state_list():
     assert concord_commands.build_state_list(2, d) == ["Unknown"]
 
 
-def test_decode_alarm_type():
-    # Use a known code from ALARM_CODES
+def test_decode_alarm_type(monkeypatch):
+    # Use a known code from ALARM_CODES without mutating the module global.
     from concord232.concord_alarm_codes import ALARM_SPECIFIC_TYPES
 
-    concord_commands.ALARM_CODES = {1: ("General", ALARM_SPECIFIC_TYPES)}
+    monkeypatch.setattr(
+        concord_commands,
+        "ALARM_CODES",
+        {1: ("General", ALARM_SPECIFIC_TYPES)},
+    )
     assert concord_commands.decode_alarm_type(1, 1) == ("General", "Fire")
     assert concord_commands.decode_alarm_type(99, 1) == ("Unknown", "Unknown")
 

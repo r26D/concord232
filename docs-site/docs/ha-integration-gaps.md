@@ -39,11 +39,11 @@ The following are handled (fully or partially) in `concord232/concord_commands.p
 
 1. **`ALARM` / Alarm–Trouble (`0x22` / `0x02`)**  
    Structured events: alarms, **system trouble**, fire / non-fire trouble, restorals, openings/closings, bypass events, and more—decoded via `cmd_alarm_trouble` and `concord232/concord_alarm_codes.py`.  
-   **Gap:** Results are not stored on the controller for the API; they appear in **debug logs** only. Many **system-level** troubles may **only** appear here, not as a zone state.
+   **Gap (HTTP):** Results are not stored on the controller for the API; they appear in **debug logs** only unless you enable **MQTT** (see below). Many **system-level** troubles may **only** appear here, not as a zone state.
 
 2. **`TOUCHPAD` (`0x22` / `0x09`)**  
    Keypad display text.  
-   **Gap:** Appended to `display_messages` on `AlarmPanelInterface`; **not** exposed by the API.
+   **Gap (HTTP):** Appended to `display_messages` on `AlarmPanelInterface`; **not** exposed by the API unless you enable **MQTT** (see below).
 
 3. **Entry / exit delay (`0x22` / `0x03`)**  
    Countdown and delay flags.  
@@ -84,12 +84,12 @@ Zone responses intentionally omit several in-memory concepts (see commented fiel
 
 ## Extension hooks
 
-`AlarmPanelInterface.register_message_handler()` exists to notify external code per `command_id`, but registered handlers are **not invoked** in the current loop (only a debug log line runs). Fixing that would be one way to push `ALARM` events to MQTT, a webhook, or a new HTTP endpoint without polling.
+`AlarmPanelInterface.register_message_handler()` runs **after** each decoded message: registered handlers receive the same dict the parser returned (including `command_id`). The server uses this to optionally publish **`ALARM`** and **`TOUCHPAD`** to MQTT when `[mqtt]` / CLI broker settings are set—see `concord232/mqtt_events.py` and `concord232/main.py`.
 
 ## Possible directions
 
+- **MQTT (supported):** When `--mqtt-host` or `[mqtt] host` is set, the server publishes JSON **schema v1** to `{topic_prefix}/event/alarm` and `{topic_prefix}/event/touchpad` (touchpad optional). Retained `{topic_prefix}/status` reports `online`. Configure the Home Assistant add-on with `mqtt_*` options or use `config.ini`. Details: [MQTT panel events design](mqtt-panel-events-design.md).
 - **HTTP:** Add endpoints such as `GET /events` (ring buffer) or `GET /last_alarm` and have HA poll them, or call an HA **webhook** from the server when `ALARM` is decoded.
-- **MQTT:** Publish JSON on each decoded event (new component).
-- **Home Assistant core:** Extend the official integration once the API exposes stable event payloads.
+- **Home Assistant core:** Extend the official integration once the API exposes stable event payloads (MQTT can be consumed today via the **MQTT** integration).
 
 For serial setup and testing the automation link, see [Testing the Superbus Automation Module](testing-superbus.md) and [Migrating concord232 to Home Assistant Yellow](migration-mac-mini-to-ha-yellow.md).

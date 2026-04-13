@@ -48,7 +48,8 @@ dependencies = [
     "stevedore",
     "prettytable",
     "pyserial",
-    "flask"
+    "flask",
+    "paho-mqtt>=1.6.1,<2",
 ]
 classifiers = [
     "License :: OSI Approved :: Apache Software License",

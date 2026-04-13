@@ -18,7 +18,21 @@ options:
   serial: socket://192.168.3.89:5500
   port: 5007
   log: ""
+  mqtt_host: ""
+  mqtt_port: 1883
+  mqtt_username: ""
+  mqtt_password: ""
+  mqtt_topic_prefix: concord232
+  mqtt_publish_touchpad: true
+  mqtt_tls: false
 schema:
   serial: str
   port: int
   log: str?
+  mqtt_host: str?
+  mqtt_port: int?
+  mqtt_username: str?
+  mqtt_password: password?
+  mqtt_topic_prefix: str?
+  mqtt_publish_touchpad: bool?
+  mqtt_tls: bool?
