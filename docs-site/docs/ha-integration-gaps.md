@@ -31,6 +31,8 @@ Defined in `concord232/server/api.py`:
 
 There is **no** endpoint today for alarm/trouble events, touchpad text, delays, feature state, or a rolling event log.
 
+**Partitions list vs partition `number` (custom integrations):** `GET /partitions` returns an array whose **length** is how many partitions the panel reports (often **1** on residential installs). Each entry includes **`number`**, the panel’s partition id (commonly **1** for the only partition). Do **not** use the panel id as a **zero-based array index**—for example, with a single partition, the only element is at **`partitions[0]`**, even though its `number` may be `1`. Using `partitions[1]` or `partitions[2]` when `len(partitions) == 1` leads to errors like *“partition index 1 not available (only 1 partition(s))”*. Match entities to rows by **`number`**, or cap configured partitions to what the API returns.
+
 ## Panel messages parsed but not passed through to HA
 
 The following are handled (fully or partially) in `concord232/concord_commands.py` / `concord232/concord.py` but **do not** surface in a form Home Assistant can poll from the current API.
@@ -88,7 +90,7 @@ Zone responses intentionally omit several in-memory concepts (see commented fiel
 
 ## Possible directions
 
-- **MQTT (supported):** When `--mqtt-host` or `[mqtt] host` is set, the server publishes JSON **schema v1** to `{topic_prefix}/event/alarm` and `{topic_prefix}/event/touchpad` (touchpad optional). Retained `{topic_prefix}/status` reports `online`. Configure the Home Assistant add-on with `mqtt_*` options or use `config.ini`. Details: [MQTT panel events design](mqtt-panel-events-design.md).
+- **MQTT (supported):** When `--mqtt-host` or `[mqtt] host` is set, the server publishes JSON **schema v1** to `{topic_prefix}/event/alarm` and `{topic_prefix}/event/touchpad` (touchpad optional). Retained `{topic_prefix}/status` reports `online`. Configure the Home Assistant add-on with `mqtt_*` options or use `config.ini`. Details: [MQTT panel events design](mqtt-panel-events-design.md). If the broker requires a login (typical for the Mosquitto add-on or HA’s integrated broker), set **`mqtt_username` and `mqtt_password`** to the same values shown under **Settings → Devices & services → MQTT → Configure**; leaving them empty connects anonymously and the broker may log `not authorised` or `null username or password`.
 - **HTTP:** Add endpoints such as `GET /events` (ring buffer) or `GET /last_alarm` and have HA poll them, or call an HA **webhook** from the server when `ALARM` is decoded.
 - **Home Assistant core:** Extend the official integration once the API exposes stable event payloads (MQTT can be consumed today via the **MQTT** integration).
 

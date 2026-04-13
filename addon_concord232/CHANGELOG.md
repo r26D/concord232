@@ -1,3 +1,8 @@
+## 0.16.8
+
+- MQTT: log clear warnings when the broker is configured without credentials or with only username or only password; call `username_pw_set` when either field is set (helps Mosquitto/HA auth failures).
+- Docs: `ha-integration-gaps.md` — broker username/password for HA Mosquitto; `GET /partitions` list index vs `number` for custom integrations.
+
 ## 0.16.7
 
 - Fix: `PanelMqttPublisher` no longer stores the touchpad-enable flag as `self.publish_touchpad`, which shadowed the `publish_touchpad` method and registered a boolean as the TOUCHPAD MQTT handler (`TypeError: 'bool' object is not callable`).

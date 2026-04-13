@@ -35,8 +35,26 @@ def _setup_mqtt(
     if mqtt is None:
         logger.error("MQTT requested but paho-mqtt is not installed")
         return
+    if not username and not password:
+        logger.warning(
+            "MQTT has no username or password configured; connecting anonymously. "
+            "Brokers that require authentication (e.g. Home Assistant Mosquitto) will "
+            "reject the client with errors such as 'not authorised' or "
+            "'null username or password'. Set mqtt_username and mqtt_password to "
+            "match your broker credentials."
+        )
+    elif password and not username:
+        logger.warning(
+            "MQTT password is set but username is empty; set mqtt_username as well "
+            "(most brokers, including HA Mosquitto, require both)."
+        )
+    elif username and not password:
+        logger.warning(
+            "MQTT username is set but password is empty; the broker may reject the "
+            "connection if a password is required."
+        )
     client = mqtt.Client(client_id=client_id, clean_session=True)
-    if username:
+    if username or password:
         client.username_pw_set(username, password)
     if tls:
         client.tls_set(tls_version=ssl.PROTOCOL_TLS_CLIENT)
