@@ -1,3 +1,10 @@
+## 0.16.6
+
+- Optional MQTT publishing for ALARM and TOUCHPAD panel events (versioned JSON payloads, `PanelMqttPublisher`, `concord232/mqtt_events.py`).
+- Add-on: MQTT options for broker host/port, credentials, topic prefix, touchpad toggle, and TLS (`config.yaml` / `run.sh`).
+- Fix: invoke `AlarmPanelInterface` message handlers with decoded commands (restores correct ALARM / touchpad handling).
+- Docs: MQTT panel events design, implementation plan, and HA integration gaps updates (`docs-site/docs`).
+
 ## 0.16.5
 
 - Docs: ser2net 8O1 wiring guide (`docs-site/docs/ser2net-8o1-wiring.md`); RFC2217 testing doc links and ser2net example line with parity.
