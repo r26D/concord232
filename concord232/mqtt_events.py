@@ -81,7 +81,8 @@ class PanelMqttPublisher:
     ) -> None:
         self._client = client
         self._prefix = topic_prefix.strip().strip("/")
-        self.publish_touchpad = publish_touchpad
+        # Must not shadow method publish_touchpad (used as a message handler callback).
+        self._touchpad_enabled = publish_touchpad
         self._log = logger or LOG
 
     def _topic(self, *parts: str) -> str:
@@ -104,7 +105,7 @@ class PanelMqttPublisher:
         self._publish_json(self._topic("event", "alarm"), payload, retain=False)
 
     def publish_touchpad(self, decoded: Mapping[str, Any]) -> None:
-        if not self.publish_touchpad:
+        if not self._touchpad_enabled:
             return
         payload = build_touchpad_payload(decoded)
         self._publish_json(self._topic("event", "touchpad"), payload, retain=False)
