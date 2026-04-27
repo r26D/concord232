@@ -2,7 +2,7 @@ import sys
 import time
 import traceback
 from datetime import datetime
-from typing import Any, Callable, List, Optional, Tuple, cast
+from typing import Any, Callable, Dict, List, Optional, Tuple, cast
 
 import serial
 
@@ -58,6 +58,88 @@ RECONNECT_BACKOFF_BASE_SECS = 5.0
 RECONNECT_BACKOFF_MAX_SECS = 120.0
 
 STOP = "STOP"
+
+# Trouble / restoral general-type pairs: when a restoral is received, the
+# matching active trouble (same spec + source + partition) is cleared.
+TROUBLE_RESTORAL_PAIRS: Tuple[Tuple[int, int], ...] = (
+    (1, 3),  # Alarm / Alarm Restoral
+    (4, 5),  # Fire trouble / restoral
+    (6, 7),  # Non-fire trouble / restoral
+    (15, 16),  # System trouble / restoral
+)
+
+
+def _format_trouble_line_from_alarm(d: dict) -> str:
+    st = d.get("source_type", "?")
+    sn = d.get("source_number", 0)
+    ag = d.get("alarm_general_type", "")
+    asp = d.get("alarm_specific_type", "Unknown")
+    if st == "Bus Device":
+        return f"Bus {sn}: {asp}"
+    return f"{st} (source {sn}): {ag} — {asp}"
+
+
+def _trouble_state_sort_key(item: Tuple[Tuple, dict]) -> Tuple[Any, ...]:
+    _, d = item
+    if d.get("source_type") == "Bus Device":
+        return (0, d.get("source_number", 0), d.get("alarm_specific_type", ""))
+    return (
+        1,
+        d.get("source_type", ""),
+        d.get("source_number", 0),
+        d.get("alarm_specific_type", ""),
+    )
+
+
+def _detail_from_trouble_store(store: dict) -> str:
+    if not store:
+        return ""
+    parts = [
+        _format_trouble_line_from_alarm(d)
+        for _, d in sorted(store.items(), key=_trouble_state_sort_key)
+    ]
+    return "; ".join(parts)
+
+
+def _buses_from_trouble_store(store: dict) -> List[int]:
+    out: List[int] = []
+    for d in store.values():
+        if d.get("source_type") == "Bus Device":
+            n = d.get("source_number")
+            if isinstance(n, int):
+                out.append(n)
+    return sorted(set(out))
+
+
+def apply_alarm_to_trouble_store(store: dict, d: dict) -> bool:
+    """
+    Apply one decoded ALARM message to *store* (active trouble key -> last decode).
+    Returns True if *store* changed.
+    """
+    gen = d.get("alarm_general_type_code")
+    if not isinstance(gen, int):
+        return False
+    spec = d.get("alarm_specific_type_code")
+    if not isinstance(spec, int):
+        spec = 0
+    st = d.get("source_type", "")
+    sn = d.get("source_number", 0)
+    p = d.get("partition_number", 0)
+    a = d.get("area_number", 0)
+    for trg, rst in TROUBLE_RESTORAL_PAIRS:
+        if gen == rst:
+            key = (trg, spec, st, sn, p, a)
+            if key in store:
+                del store[key]
+                return True
+            return False
+        if gen == trg:
+            key = (trg, spec, st, sn, p, a)
+            if store.get(key) == d:
+                return False
+            store[key] = d
+            return True
+    return False
 
 
 class CommException(Exception):
@@ -321,6 +403,33 @@ class AlarmPanelInterface(object):
         self.message_handlers: dict[Any, list[Callable[[dict], None]]] = {}
         for command_code, (command_id, command_name, parser_fn) in RX_COMMANDS.items():
             self.message_handlers[command_id] = []
+        self._active_troubles: Dict[Tuple[Any, ...], dict] = {}
+        self._trouble_summary_logged: str = ""
+        self._sync_trouble_to_panel()
+
+    def _sync_trouble_to_panel(self) -> None:
+        detail = _detail_from_trouble_store(self._active_troubles)
+        self.panel["trouble"] = bool(self._active_troubles)
+        self.panel["trouble_count"] = len(self._active_troubles)
+        self.panel["trouble_detail"] = detail
+        buses = _buses_from_trouble_store(self._active_troubles)
+        if buses:
+            self.panel["trouble_buses"] = buses
+        else:
+            self.panel.pop("trouble_buses", None)
+
+    def _merge_trouble_state(self, d: dict) -> None:
+        if not apply_alarm_to_trouble_store(self._active_troubles, d):
+            return
+        self._sync_trouble_to_panel()
+        after = _detail_from_trouble_store(self._active_troubles)
+        if after == self._trouble_summary_logged:
+            return
+        self._trouble_summary_logged = after
+        if self._active_troubles:
+            self.logger.warning("Active trouble(s): %s", after)
+        else:
+            self.logger.info("Trouble cleared (no active items tracked)")
 
     def register_message_handler(
         self, command_id: Any, handler_fn: Callable[[dict], None]
@@ -474,6 +583,9 @@ class AlarmPanelInterface(object):
                 self.logger.info("Serial port reconnected: %s", self.dev_name)
                 self.reset_pending_tx()
                 self._drain_tx_queue()
+                self._active_troubles.clear()
+                self._trouble_summary_logged = ""
+                self._sync_trouble_to_panel()
 
                 self.logger.info(
                     "Waiting %.1fs for serial link to settle",
@@ -650,6 +762,8 @@ class AlarmPanelInterface(object):
             if not decoded_command:
                 return
             decoded_command["command_id"] = command_id
+            if command_id == "ALARM":
+                self._merge_trouble_state(decoded_command)
             if "action" in decoded_command:
                 try:
                     func = getattr(self, decoded_command["action"], None)
