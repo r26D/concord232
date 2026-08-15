@@ -2,6 +2,8 @@ from typing import Any, Dict, List, Optional, cast
 
 import requests
 
+DEFAULT_TIMEOUT = 10.0
+
 
 class Client(object):
     """
@@ -9,15 +11,19 @@ class Client(object):
     Provides methods to list zones, partitions, arm/disarm, send keys, and get version info.
     """
 
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, timeout: float = DEFAULT_TIMEOUT) -> None:
         """
         Initialize the client with the server URL.
         Args:
             url (str): Base URL of the concord232 server.
+            timeout (float): Timeout in seconds for each HTTP request, applied
+                to connecting and to each read. Without it, a connection that
+                goes dead mid-request blocks the calling thread forever.
         """
         self._url = url
         self._session = requests.Session()
         self._last_event_index = 0
+        self._timeout = timeout
 
     def list_zones(self) -> List[Dict[str, Any]]:
         """
@@ -25,7 +31,7 @@ class Client(object):
         Returns:
             list: List of zone dictionaries.
         """
-        r = self._session.get(self._url + "/zones")
+        r = self._session.get(self._url + "/zones", timeout=self._timeout)
         data = r.json()
         return cast(List[Dict[str, Any]], data["zones"])
 
@@ -35,7 +41,7 @@ class Client(object):
         Returns:
             list: List of partition dictionaries.
         """
-        r = self._session.get(self._url + "/partitions")
+        r = self._session.get(self._url + "/partitions", timeout=self._timeout)
         data = r.json()
         return cast(List[Dict[str, Any]], data["partitions"])
 
@@ -51,7 +57,9 @@ class Client(object):
         params: Dict[str, str] = {"cmd": "arm", "level": level}
         if option is not None:
             params["option"] = option
-        r = self._session.get(self._url + "/command", params=params)
+        r = self._session.get(
+            self._url + "/command", params=params, timeout=self._timeout
+        )
         return r.status_code == 200
 
     def disarm(self, master_pin: str) -> bool:
@@ -63,7 +71,9 @@ class Client(object):
             bool: True if successful, False otherwise.
         """
         params: Dict[str, str] = {"cmd": "disarm", "master_pin": master_pin}
-        r = self._session.get(self._url + "/command", params=params)
+        r = self._session.get(
+            self._url + "/command", params=params, timeout=self._timeout
+        )
         return r.status_code == 200
 
     def send_keys(self, keys: str, group: bool = False, partition: int = 1) -> bool:
@@ -82,7 +92,9 @@ class Client(object):
             "group": str(group).lower(),
             "partition": str(partition),
         }
-        r = self._session.get(self._url + "/command", params=params)
+        r = self._session.get(
+            self._url + "/command", params=params, timeout=self._timeout
+        )
         return r.status_code == 200
 
     def get_version(self) -> str:
@@ -91,7 +103,7 @@ class Client(object):
         Returns:
             str: Version string.
         """
-        r = self._session.get(self._url + "/version")
+        r = self._session.get(self._url + "/version", timeout=self._timeout)
         if r.status_code == 404:
             return "1.0"
         else:
