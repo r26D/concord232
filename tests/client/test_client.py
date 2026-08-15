@@ -105,3 +105,24 @@ def test_send_keys_partition(mock_session):
     assert result is True
     args, kwargs = mock_instance.get.call_args
     assert kwargs["params"]["partition"] == "4"
+
+
+@patch("concord232.client.client.requests.Session")
+def test_requests_use_default_timeout(mock_session):
+    mock_instance = mock_session.return_value
+    mock_instance.get.return_value = DualJSONMock({"zones": []})
+    client = Client("http://fake")
+    client.list_zones()
+    assert mock_instance.get.call_args.kwargs["timeout"] == 10.0
+
+
+@patch("concord232.client.client.requests.Session")
+def test_requests_use_custom_timeout(mock_session):
+    mock_instance = mock_session.return_value
+    mock_instance.get.return_value.status_code = 200
+    client = Client("http://fake", timeout=2.5)
+    client.arm("stay")
+    client.disarm("1234")
+    client.send_keys("*")
+    for call in mock_instance.get.call_args_list:
+        assert call.kwargs["timeout"] == 2.5
