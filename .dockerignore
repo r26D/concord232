@@ -1,0 +1,15 @@
+.git
+.github
+.claude
+.codex
+.cursor
+.skills
+docs
+docs-site
+tests
+addon_concord232
+coverage.xml
+.coverage
+*.png
+diagram.mermaid
+uv.lock

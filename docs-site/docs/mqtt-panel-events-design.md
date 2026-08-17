@@ -58,7 +58,7 @@ Use a configurable **topic prefix** (default suggestion: `concord232` or `home/c
 | `{prefix}/status` | yes | JSON: `online` / connection state; optional `last_error` (broker LWT can mirror `offline`). |
 | `{prefix}/event/alarm` | no | One message per decoded `ALARM` / trouble frame. |
 | `{prefix}/event/touchpad` | no | One message per `TOUCHPAD` update (may be frequent; consider optional throttle later). |
-| `{prefix}/event/zone` | no | *Optional phase:* zone snapshot deltas if we want parity with HTTP without polling. |
+| `{prefix}/zone/{number}/state` | yes | *Implemented (opt-in `--mqtt-zones` / `[mqtt] zones`):* retained per-zone state mirroring the `/zones` REST fields plus a `tripped` boolean, published on every ZONE_STATUS / ZONE_DATA message (bootstrap publishes all zones). With `--mqtt-discovery-prefix` (typically `homeassistant`) a retained Home Assistant MQTT discovery config is published once per zone, so zone binary sensors appear automatically with availability tied to `{prefix}/status` (LWT marks `offline`). HTTP-parity zone state without polling. |
 
 Version the payload with a top-level **`schema_version`** integer (start at `1`).
 

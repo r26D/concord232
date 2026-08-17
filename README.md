@@ -13,6 +13,20 @@ To install::
 sudo pip3 install concord232
 ```
 
+## Running the Server with Docker
+
+A container image of the server is built from this repository and published to GitHub Container Registry for amd64 and arm64:
+
+```sh
+docker run -d --name concord232 \
+  --device /dev/ttyUSB0 \
+  -p 5007:5007 \
+  ghcr.io/r26d/concord232:main \
+  --serial /dev/ttyUSB0 --listen 0.0.0.0 --port 5007
+```
+
+Any server flag can be appended to the command, including the MQTT options. When `--serial` is a ser2net/RFC2217 URL, the `--device` mapping is not needed. Images are tagged with the branch name on branch pushes, the version plus `latest` on `v*` release tags, and the commit sha for pinning.
+
 ## Installing Your Local Version
 
 If you want to use your own improved version of this package (instead of the version from PyPI), you can install it directly from your local source.
